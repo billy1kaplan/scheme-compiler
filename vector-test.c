@@ -16,27 +16,28 @@ int main()
     // Insert 50 numbers into it
     for (int i=0; i < 50; i++)
     {
-//        insert(vector,0,i);
+        insert(vector,0,i);
     }
 
     // Display list, both in entirety as well as one by one
-//    print(vector);
+    print(vector);
     int value;
     for (int i=0; i < 50; i++)
     {
-//	int status = get(vector,i,&value);
-//	printf("Status = %i, value = %i\n",status,value);
+	int status = get(vector,i,&value);
+	printf("Status = %i, value = %i\n",status,value);
     }
 
     // Delete a few values, and display again
-    //delete(vector,6);
-    //delete(vector,12);
-    //delete(vector,49);
-    //print(vector);
+    delete(vector,49);
+    delete(vector,6);
+    delete(vector,12);
+    delete(vector,49);
+    print(vector);
 
     // Clean up memory
-//    cleanup(vector);
-//    free(vector);
+    cleanup(vector);
+    free(vector);
 
     return 0;
 }
