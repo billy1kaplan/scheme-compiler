@@ -1,8 +1,8 @@
 CC = clang
 CFLAGS = -g
 
-SRCS = vector.c token.c tokenizer.c vector-test.c
-HDRS = vector.h token.h tokenizer.h
+SRCS = vector.c token.c tokenizer.c tokenerror.c vector-test.c
+HDRS = vector.h token.h tokenizer.h tokenerror.h
 OBJS = $(SRCS:.c=.o)
 
 vector: $(OBJS)

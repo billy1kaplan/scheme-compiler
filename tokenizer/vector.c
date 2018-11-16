@@ -18,6 +18,9 @@ void init(Vector *vector, int memorySize) {
 
 /* Clears out the elements of the vector */
 void clear(Vector *vector) {
+    for (int i = 0; i < vector->size; i++) {
+        vector->array[i] = '\0';
+    }
 	vector->size = 0;
 }
 
@@ -70,8 +73,9 @@ int insert(Vector *vector, int location, char c) {
             array[i + 1] = vector->array[i];
         }
 
-        vector->memorySize = newMemorySize;
         free(vector->array);
+
+        vector->memorySize = newMemorySize;
         vector->array = array;
         vector->size++;
         return 0;
