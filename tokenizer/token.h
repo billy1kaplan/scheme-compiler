@@ -15,11 +15,25 @@ struct Token {
         char *s;
         bool b;
     };
+    //Token *next;
 };
+
 
 typedef struct Token Token;
 
-void printToken(Token *token);
+/* Returns an open token instance */
+const Token *openToken();
+
+/* Returns a close token instance */
+const Token *closeToken();
+
+const Token *trueToken();
+const Token *falseToken();
+
+/* Prints a human readable representation of the token including the type */
+void printToken(const Token *token);
+
+/* Cleans up the memory associated with the token */
 void cleanupToken(Token *token);
 
 #endif

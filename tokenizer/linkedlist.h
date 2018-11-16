@@ -1,11 +1,37 @@
 #include "token.h"
 
+#ifndef _LINKEDLIST
+#define _LINKEDLIST
+
 struct Node  {
-    Token *token;
-    Node *next;
-}
+    struct Node *next;
+    union {
+        Token *token;
+        const Token *constToken;
+    };
+    //char *type;
+    //void *data;
+};
 
 typedef struct Node Node;
 
-Node create();
-void cleanupLinked()
+struct LinkedList {
+    Node *head;
+    Node *end;
+};
+
+typedef struct LinkedList LinkedList;
+
+/* Makes an empty linked list */
+void initLinkedList(LinkedList *linkedList);
+
+/* Appends a given token to the end of the linked list*/
+void appendToken(LinkedList *linkedList, const Token * const token);
+
+/* Walks through the linked list and displays all contained elements */
+void displayLinkedList(LinkedList *linkedList);
+
+/* Cleans up memory associated with the linked list*/
+void cleanupLinkedList(LinkedList *linkedList);
+
+#endif

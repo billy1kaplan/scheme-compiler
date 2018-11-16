@@ -1,9 +1,8 @@
 #ifndef _TOKENERROR
 #define _TOKENERROR
 
-#ifndef STR_ERR
 #define STR_ERR "Unexpected end of file while processing String"
-#endif
+#define BOOL_ERR "Unexpected token while processing Boolean"
 
 struct TokenError {
     char *message;
