@@ -11,12 +11,6 @@ struct TokenError {
 
 typedef struct TokenError TokenError;
 
-/* Initialize the error with a null message */
-void initError(TokenError *error);
-
-/* Set error detail to a given message */
-void setDetail(TokenError *error, char *detail);
-
 /* print out the error message */
 void displayError(TokenError *error);
 

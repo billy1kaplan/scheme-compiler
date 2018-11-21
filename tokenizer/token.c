@@ -1,24 +1,24 @@
 #include "token.h"
 
-const Token OPEN_CONST = { OPEN_TYPE };
-const Token CLOSE_CONST = { CLOSE_TYPE };
+Token OPEN_CONST = { OPEN_TYPE };
+Token CLOSE_CONST = { CLOSE_TYPE };
 
-const Token TRUE_CONST = { BOOL_TYPE, .b=true };
-const Token FALSE_CONST = { BOOL_TYPE, .b=false };
+Token TRUE_CONST = { BOOL_TYPE, .b=true };
+Token FALSE_CONST = { BOOL_TYPE, .b=false };
 
-const Token *openToken() {
+Token *openToken() {
     return &OPEN_CONST;
 }
 
-const Token *closeToken() {
+Token *closeToken() {
     return &CLOSE_CONST;
 }
 
-const Token *trueToken() {
+Token *trueToken() {
     return &TRUE_CONST;
 }
 
-const Token *falseToken() {
+Token *falseToken() {
     return &FALSE_CONST;
 }
 

@@ -1,8 +1,3 @@
-/* Header info for vector.c. The Vector struct contains the data necessary; but
-   since C is not object-oriented, the traditional "methods" that you're
-   accustomed to are instead functions that take a pointer to that struct as a
-   parameter. */
-
 struct Vector
 {
     // A pointer to a traditional C array to hold data

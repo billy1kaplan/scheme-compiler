@@ -22,13 +22,13 @@ struct Token {
 typedef struct Token Token;
 
 /* Returns an open token instance */
-const Token *openToken();
+Token *openToken();
 
 /* Returns a close token instance */
-const Token *closeToken();
+Token *closeToken();
 
-const Token *trueToken();
-const Token *falseToken();
+Token *trueToken();
+Token *falseToken();
 
 /* Prints a human readable representation of the token including the type */
 void printToken(const Token *token);
