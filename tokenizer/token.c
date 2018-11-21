@@ -1,5 +1,8 @@
 #include "token.h"
 
+#include <stdlib.h>
+#include <stdio.h>
+
 Token OPEN_CONST = { OPEN_TYPE };
 Token CLOSE_CONST = { CLOSE_TYPE };
 

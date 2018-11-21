@@ -12,7 +12,7 @@ run_test() {
     tokenize_file $1 2>&1 | python test_script.py
 }
 
- Run a series of test to detect leaks
+# Run a series of test to detect leaks
 make && run_test hard-scheme.txt \
     && run_test parens.txt \
     && run_test numbers.txt \
