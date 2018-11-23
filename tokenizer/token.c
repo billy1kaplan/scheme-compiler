@@ -28,29 +28,29 @@ Token *falseToken() {
 void printToken(const Token *token) {
     switch (token->type) {
         case INT_TYPE:
-            printf("%i : Int\n", token->i);
+            printf("i:%i\n", token->i);
             break;
         case DOUBLE_TYPE:
-            printf("%f : Double\n", token->d);
+            printf("d:%f\n", token->d);
             break;
         case STR_TYPE:
-            printf("%s : String\n", token->s);
+            printf("s:%s\n", token->s);
             break;
         case BOOL_TYPE:
             if (token->b) {
-                printf("true : Boolean\n");
+                printf("b:true\n");
             } else {
-                printf("false : Boolean\n");
+                printf("b:false\n");
             }
             break;
         case OPEN_TYPE:
-            printf("( : Open\n");
+            printf("o:(\n");
             break;
         case CLOSE_TYPE:
-            printf(") : Close\n");
+            printf("c:)\n");
             break;
         case SYMBOL_TYPE:
-            printf("%s : Symbol\n", token->s);
+            printf("x:%s\n", token->s);
             break;
     }
 }

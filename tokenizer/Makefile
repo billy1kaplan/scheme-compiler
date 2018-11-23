@@ -5,7 +5,7 @@ SRCS = vector.c token.c tokenizer.c tokenerror.c linkedlist.c vector-test.c
 HDRS = vector.h token.h tokenizer.h tokenerror.h linkedlist.h
 OBJS = $(SRCS:.c=.o)
 
-vector: $(OBJS)
+tokenizer: $(OBJS)
 	$(CC)  $(CFLAGS) $^  -o $@
 
 %.o : %.c $(HDRS)
@@ -13,4 +13,4 @@ vector: $(OBJS)
 
 clean:
 	rm *.o
-	rm vector
+	rm tokenizer
