@@ -1,6 +1,9 @@
 #include <stdbool.h>
 
-typedef enum {INT_TYPE, DOUBLE_TYPE, STR_TYPE, BOOL_TYPE, SYMBOL_TYPE, PAIR} ParseNodeType;
+#ifndef _PARSETREE
+#define _PARSETREE
+
+typedef enum {INT_TYPE, DOUBLE_TYPE, STR_TYPE, BOOL_TYPE, SYMBOL_TYPE, PAIR_TYPE, NULL_TYPE} ParseNodeType;
 
 struct ParseNode {
   ParseNodeType type;
@@ -18,6 +21,9 @@ struct ParseNode {
 
 typedef struct ParseNode ParseNode;
 
+/* Creates a null node */
+ParseNode *makeNull();
+
 /* Constructs a pair of parse nodes */
 ParseNode *cons(ParseNode *car, ParseNode *cdr);
 
@@ -31,10 +37,15 @@ ParseNode *cdr(ParseNode *parseNode);
 ParseNode *reverse(ParseNode *parseNode);
 
 /* Returns true if all data is equal in both parse trees*/
-bool *equals(ParseNode *one, ParseNode *two);
+bool equals(ParseNode *one, ParseNode *two);
 
 /* Returns a copy of a given parse node and any possible sub-nodes */
 ParseNode *copy(ParseNode *parseNode);
 
+/* Displays the entirety of the parse tree */
+void display(ParseNode *parseNode);
+
 /* Frees memory allocated for the ParseNode */
 void cleanupParseNode(ParseNode *parseNode);
+
+#endif

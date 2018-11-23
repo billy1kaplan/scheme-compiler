@@ -2,11 +2,13 @@
 CC = clang
 CFLAGS = -g
 
-SRCS = parsetree.c parsetree-test.c
-HDRS = parsetree.h
+#parsetree-test.c
+
+SRCS = parsetree.c parser.c vector.c parser-test.c
+HDRS = parsetree.h parser.h vector.h
 OBJS = $(SRCS:.c=.o)
 
-parsetree-test: $(OBJS)
+parser: $(OBJS)
 	$(CC)  $(CFLAGS) $^  -o $@
 
 %.o : %.c $(HDRS)
