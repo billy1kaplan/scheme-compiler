@@ -29,6 +29,23 @@ ParseNode *cdr(ParseNode *parseNode) {
   return parseNode->consCell.cdr;
 }
 
+void setcar(ParseNode* parseNode, ParseNode *val) {
+  parseNode->consCell.car = val;
+}
+
+void setcdr(ParseNode* parseNode, ParseNode *val) {
+  parseNode->consCell.cdr = val;
+}
+
+ParseNode *pop(ParseNode **meta) {
+  ParseNode *first = car(*meta);
+  ParseNode *tmp = *meta;
+  *meta = cdr(*meta);
+  free(tmp);
+  return first;
+}
+
+
 /* Reverse a parse tree and all subnodes */
 ParseNode *reverse(ParseNode *parseNode) {
   ParseNode *result;
@@ -36,8 +53,7 @@ ParseNode *reverse(ParseNode *parseNode) {
     result = makeNull();
     ParseNode *current = parseNode;
     while (current->type != NULL_TYPE) {
-      ParseNode *reversedCar = copy(reverse(car(current)));
-      result = cons(reversedCar, result);
+      result = cons(reverse(car(current)), result);
       current = cdr(current);
     }
   } else {
@@ -83,17 +99,18 @@ bool equals(ParseNode *one, ParseNode *two) {
 
 /* Returns a copy of a given parse node and any possible sub-nodes */
 ParseNode *copy(ParseNode *parseNode) {
+  if (parseNode->type == NULL_TYPE) {
+    return makeNull();
+  }
+
   ParseNode *result = (ParseNode *)malloc(sizeof(ParseNode));
   result->type = parseNode->type;
-
   switch (parseNode->type) {
   case NULL_TYPE:
     break;
   case STR_TYPE:
   case SYMBOL_TYPE:
-    // TODO: fix this to actually copy
-    //result->s = malloc(sizeof(char));
-    result->s = parseNode->s;
+    result->s = strdup(parseNode->s);
     break;
   case PAIR_TYPE:
     result->consCell.car = copy(parseNode->consCell.car);
@@ -113,8 +130,7 @@ ParseNode *copy(ParseNode *parseNode) {
   return result;
 }
 
-/* Displays the entirety of the parse tree */
-void display(ParseNode *parseNode) {
+void displayInternal(ParseNode *parseNode) {
   switch (parseNode->type) {
   case STR_TYPE:
   case SYMBOL_TYPE:
@@ -124,7 +140,7 @@ void display(ParseNode *parseNode) {
     printf("(");
     ParseNode *current = parseNode;
     while (current->type == PAIR_TYPE) {
-      display(car(current));
+      displayInternal(car(current));
       if (cdr(current)->type != NULL_TYPE) {
         printf(" ");
       }
@@ -147,6 +163,18 @@ void display(ParseNode *parseNode) {
   }
 }
 
+/* Displays the entirety of the parse tree */
+void display(ParseNode *parseNode) {
+  ParseNode *current = parseNode;
+  while (current->type == PAIR_TYPE) {
+    displayInternal(car(current));
+    if (cdr(current)->type != NULL_TYPE) {
+      printf(" ");
+    }
+    current = cdr(current);
+  }
+}
+
 /* Frees memory allocated for the ParseNode */
 void cleanupParseNode(ParseNode *parseNode) {
   switch (parseNode->type) {
@@ -156,8 +184,8 @@ void cleanupParseNode(ParseNode *parseNode) {
     free(parseNode);
     break;
   case PAIR_TYPE:
-    free(parseNode->consCell.car);
-    free(parseNode->consCell.cdr);
+    cleanupParseNode(parseNode->consCell.car);
+    cleanupParseNode(parseNode->consCell.cdr);
     free(parseNode);
     break;
   case INT_TYPE:

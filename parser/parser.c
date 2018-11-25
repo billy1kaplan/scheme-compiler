@@ -93,22 +93,26 @@ ParseNode *parse() {
   init(buffer, 8);
   char *type = malloc(sizeof(char));
 
+  int errno = 0;
   int depth = 0;
-
   readToken(type, buffer);
-  while (*type != 'e') {
+  while (*type != 'e' && errno == 0) {
     if (*type == 'o') {
       parseTree = cons(makeNull(), parseTree);
+      depth++;
     } else if (*type == 'c') {
-      if (parseTree->type == PAIR_TYPE && cdr(parseTree)->type == PAIR_TYPE) {
-        parseTree = cons(cons(car(parseTree), car(cdr(parseTree))),
-                         cdr(cdr(parseTree)));
+      if (depth <= 0) {
+        fprintf(stderr, "Too many closing parentheses\n");
+        errno = 1;
+      } else if (depth > 1) {
+        ParseNode *first = pop(&parseTree);
+        setcar(parseTree, cons(first, car(parseTree)));
       }
+      depth--;
     } else {
       ParseNode *atomicNode = parseTreeFromAtomicToken(*type, buffer);
-      if (parseTree->type == PAIR_TYPE) {
-        parseTree = cons(cons(atomicNode, car(parseTree)),
-                         cdr(parseTree));
+      if (depth > 0) {
+        setcar(parseTree, cons(atomicNode, car(parseTree)));
       } else {
         parseTree = cons(atomicNode, parseTree);
       }
@@ -119,6 +123,18 @@ ParseNode *parse() {
   }
 
   free(type);
-  return reverse(parseTree);
-}
+  cleanup(buffer);
+  if (depth > 0) {
+    fprintf(stderr, "Unexpected open expression\n");
+    errno = 1;
+  }
 
+  if (errno) {
+    cleanupParseNode(parseTree);
+    return makeNull();
+  } else {
+    ParseNode *reversedResult = reverse(parseTree);
+    cleanupParseNode(parseTree);
+    return reversedResult;
+  }
+}

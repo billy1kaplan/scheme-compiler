@@ -33,6 +33,17 @@ ParseNode *car(ParseNode *parseNode);
 /* returns the second element of a pair parse node */
 ParseNode *cdr(ParseNode *parseNode);
 
+
+/* Modifies the car element of the given pair */
+void setcar(ParseNode* parseNode, ParseNode *val);
+
+/* Modifies the cdr element of the given pair */
+void setcdr(ParseNode* parseNode, ParseNode *val);
+
+/* Returns the first element of the pair and assigns the pair to the
+   cdr value */
+ParseNode *pop(ParseNode **meta);
+
 /* Reverse a parse tree and all subnodes */
 ParseNode *reverse(ParseNode *parseNode);
 

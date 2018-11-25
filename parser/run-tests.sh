@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
-#make && ./parsetree-test
-make && cat fib-tokens.txt | ./parser
-#make && cat simple.txt | ./parser
+parse_file() {
+    cat $1 | ./parser
+}
+
+make && parse_file open-parens.txt \
+         && parse_file closed-parens.txt \
+         && parse_file simple.txt \
+         && parse_file fib-tokens.txt

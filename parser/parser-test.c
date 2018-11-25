@@ -1,6 +1,10 @@
 #include "parser.h"
+#include "parsetree.h"
 #include <stdio.h>
 
 int main() {
-  display(parse());
+  ParseNode *result = parse();
+  display(result);
+  printf("\n");
+  cleanupParseNode(result);
 }
