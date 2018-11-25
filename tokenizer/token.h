@@ -3,7 +3,7 @@
 #ifndef _TOKEN
 #define _TOKEN
 
-typedef enum {INT_TYPE, DOUBLE_TYPE, STR_TYPE, BOOL_TYPE, OPEN_TYPE, CLOSE_TYPE, SYMBOL_TYPE} TokenType;
+typedef enum {INT_TYPE, DOUBLE_TYPE, STR_TYPE, BOOL_TYPE, OPEN_TYPE, CLOSE_TYPE, SYMBOL_TYPE, EOF_TYPE} TokenType;
 
 struct Token {
   TokenType type;
@@ -24,6 +24,9 @@ Token *openToken();
 
 /* Returns a close token instance */
 Token *closeToken();
+
+/* Returns a close token instance */
+Token *eofToken();
 
 Token *trueToken();
 Token *falseToken();

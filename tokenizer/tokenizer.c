@@ -237,6 +237,8 @@ int dispatchTokenizer(LinkedList *tokens, LinkedList *errors) {
     charRead = fgetc(stdin);
   }
 
+  appendToken(tokens, eofToken());
+
   cleanup(buffer);
   return errno;
 }
