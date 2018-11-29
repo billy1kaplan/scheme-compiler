@@ -105,7 +105,7 @@ ParseNode *parse() {
         fprintf(stderr, "Too many closing parentheses\n");
         errno = 1;
       } else if (depth > 1) {
-        ParseNode *first = pop(&parseTree);
+        ParseNode *first = popNode(&parseTree);
         setcar(parseTree, cons(first, car(parseTree)));
       }
       depth--;

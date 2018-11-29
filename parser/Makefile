@@ -1,4 +1,3 @@
-
 CC = clang
 CFLAGS = -g
 

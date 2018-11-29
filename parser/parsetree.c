@@ -37,12 +37,28 @@ void setcdr(ParseNode* parseNode, ParseNode *val) {
   parseNode->consCell.cdr = val;
 }
 
-ParseNode *pop(ParseNode **meta) {
+ParseNode *popNode(ParseNode **meta) {
   ParseNode *first = car(*meta);
   ParseNode *tmp = *meta;
   *meta = cdr(*meta);
   free(tmp);
   return first;
+}
+
+/* Reverse a parse tree and all subnodes */
+ParseNode *reverseOne(ParseNode *parseNode) {
+  ParseNode *result;
+  if (parseNode->type == PAIR_TYPE) {
+    result = makeNull();
+    ParseNode *current = parseNode;
+    while (current->type != NULL_TYPE) {
+      result = cons(car(current), result);
+      current = cdr(current);
+    }
+  } else {
+    result = copy(parseNode);
+  }
+  return result;
 }
 
 
@@ -165,6 +181,7 @@ void displayInternal(ParseNode *parseNode) {
 
 /* Displays the entirety of the parse tree */
 void display(ParseNode *parseNode) {
+  /*
   ParseNode *current = parseNode;
   while (current->type == PAIR_TYPE) {
     displayInternal(car(current));
@@ -173,6 +190,8 @@ void display(ParseNode *parseNode) {
     }
     current = cdr(current);
   }
+  */
+  displayInternal(parseNode);
 }
 
 /* Frees memory allocated for the ParseNode */

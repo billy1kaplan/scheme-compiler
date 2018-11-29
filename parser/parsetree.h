@@ -19,6 +19,19 @@ struct ParseNode {
   };
 };
 
+#define IS_BOOL(value) ((ParseNode).type == BOOL_TYPE)
+#define IS_INT(value) ((ParseNode).type == INT_TYPE)
+#define IS_DOUBLE(value) ((ParseNode).type == DOUBLE_TYPE)
+#define IS_NULL(value) ((ParseNode).type == NULL_TYPE)
+
+#define BOOL_NODE(value) ((ParseNode) { BOOL_TYPE, .b = value})
+#define INT_NODE(value) ((ParseNode) { INT_TYPE, .i = value})
+#define DOUBLE_NODE(value) ((ParseNode) { DOUBLE_TYPE, .d = value})
+
+#define AS_BOOL(value) ((value).b)
+#define AS_INT(value) ((value).i)
+#define AS_DOUBLE(value) ((value).d)
+
 typedef struct ParseNode ParseNode;
 
 /* Creates a null node */
@@ -33,7 +46,6 @@ ParseNode *car(ParseNode *parseNode);
 /* returns the second element of a pair parse node */
 ParseNode *cdr(ParseNode *parseNode);
 
-
 /* Modifies the car element of the given pair */
 void setcar(ParseNode* parseNode, ParseNode *val);
 
@@ -42,7 +54,10 @@ void setcdr(ParseNode* parseNode, ParseNode *val);
 
 /* Returns the first element of the pair and assigns the pair to the
    cdr value */
-ParseNode *pop(ParseNode **meta);
+ParseNode *popNode(ParseNode **meta);
+
+/* Reverses a parse tree to depth 1 */
+ParseNode *reverseOne(ParseNode *parseNode);
 
 /* Reverse a parse tree and all subnodes */
 ParseNode *reverse(ParseNode *parseNode);
