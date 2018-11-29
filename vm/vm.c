@@ -6,6 +6,7 @@
 #include "vm.h"
 #include "parsetree.h"
 
+
 VM vm;
 
 static void resetStack() {
@@ -22,6 +23,25 @@ void freeVM() {
 static InterpretResult run() {
 #define READ_BYTE() (*vm.ip++)
 #define READ_CONSTANT() (vm.chunk->constants.values[READ_BYTE()])
+#define VARIADIC_OP(op, init)                                     \
+  do {                                                            \
+    Value result = init;                                          \
+    Value a = pop();                                              \
+    while (! (IS_NULL(a))) {                                      \
+      if (IS_DOUBLE(a) && IS_INT(result)) {                       \
+        result = DOUBLE_NODE(AS_INT(result));                     \
+      } else if (IS_INT(a) && IS_DOUBLE(result)) {                \
+        a = DOUBLE_NODE(AS_INT(result));                          \
+      }                                                           \
+      if (IS_INT(a)) {                                            \
+        result = INT_NODE(AS_INT(result) op AS_INT(a));           \
+      } else if (IS_DOUBLE(a)) {                                  \
+        result = DOUBLE_NODE(AS_DOUBLE(result) op AS_DOUBLE(a));  \
+      }                                                           \
+      a = pop();                                                  \
+    }                                                             \
+    push(result);                                                 \
+  } while (false)
 #define BINARY_OP(op)                                             \
   do {                                                            \
     Value a = pop();                                              \
@@ -56,9 +76,9 @@ static InterpretResult run() {
       push(constant);
       break;
     }
-      case OP_ADD: BINARY_OP(+); break;
-    case OP_SUBTRACT: BINARY_OP(-); break;
-    case OP_MULTIPLY: BINARY_OP(*); break;
+    case OP_ADD: VARIADIC_OP(+, INT_NODE(0)); break;
+    case OP_SUBTRACT: VARIADIC_OP(-, pop()); break;
+    case OP_MULTIPLY: VARIADIC_OP(*, INT_NODE(1)); break;
     case OP_DIVIDE: BINARY_OP(/); break;
       //case OP_NEGATE: push(-pop()); break;
     case OP_RETURN: {
@@ -70,6 +90,7 @@ static InterpretResult run() {
   }
 #undef READ_BYTE
 #undef READ_CONSTANT
+#undef VARIADIC_OP
 #undef BINARY_OP
 }
 
@@ -82,7 +103,7 @@ InterpretResult interpret(Chunk *chunk, ParseNode parseNode) {
   printf("Start run");
   fflush(stdout);
   run();
-  printf("End run");
+  printf("End run\n");
   fflush(stdout);
   return INTERPRET_OK;
 }

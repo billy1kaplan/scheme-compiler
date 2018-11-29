@@ -67,6 +67,7 @@ static void runFile(const char *path) {
 int main(int argc, const char* argv[]) {
   ParseNode *parsed = parse();
   display(parsed);
+  printf("\n");
 
   initVM();
   Chunk chunk;
@@ -85,6 +86,7 @@ int main(int argc, const char* argv[]) {
   }
   */
 
+  free(parsed);
   freeVM();
   return 0;
 }

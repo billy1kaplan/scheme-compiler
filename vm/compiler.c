@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 
 #include "compiler.h"
 #include "parsetree.h"
@@ -48,15 +49,40 @@ static bool compileOperands(Chunk *chunk, ParseNode parseNode) {
   return status;
 }
 
+static void emitOperation(Chunk *chunk, ParseNode parseNode) {
+  switch (parseNode.s[0]) {
+  case '+':
+    emitByte(chunk, OP_ADD);
+    break;
+  case '-':
+    emitByte(chunk, OP_SUBTRACT);
+    break;
+  case '*':
+    emitByte(chunk, OP_MULTIPLY);
+    break;
+  default:
+    //Lookup symbol operation
+    break;
+  }
+}
+
+static bool streq(const ParseNode *node, const char *str) {
+  return strcmp(node->s, str) == 0;
+}
+
 static bool compileInternal(Chunk *chunk, ParseNode parseNode) {
   switch(parseNode.type) {
   case NULL_TYPE: emitNull(chunk); break;
+  case STR_TYPE: emitConstant(chunk, parseNode); break;
   case INT_TYPE: emitConstant(chunk, parseNode); break;
   case DOUBLE_TYPE: emitConstant(chunk, parseNode); break;
-  case SYMBOL_TYPE: emitByte(chunk, OP_ADD); break;
+  case SYMBOL_TYPE: emitOperation(chunk, parseNode); break;
   case PAIR_TYPE: {
-    return (compileOperands(chunk, *parseNode.consCell.cdr) &&
-            compileInternal(chunk, *parseNode.consCell.car));
+    if (IS_SYMBOL(*car(&parseNode)) && streq(car(&parseNode), "lambda")) {
+    } else {
+      return (compileOperands(chunk, *cdr(&parseNode)) &&
+              compileInternal(chunk, *car(&parseNode)));
+    }
   }
   default:
     break;
