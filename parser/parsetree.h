@@ -19,10 +19,11 @@ struct ParseNode {
   };
 };
 
-#define IS_BOOL(value) ((ParseNode).type == BOOL_TYPE)
-#define IS_INT(value) ((ParseNode).type == INT_TYPE)
-#define IS_DOUBLE(value) ((ParseNode).type == DOUBLE_TYPE)
-#define IS_NULL(value) ((ParseNode).type == NULL_TYPE)
+#define IS_BOOL(value) ((value).type == BOOL_TYPE)
+#define IS_INT(value) ((value).type == INT_TYPE)
+#define IS_DOUBLE(value) ((value).type == DOUBLE_TYPE)
+#define IS_NULL(value) ((value).type == NULL_TYPE)
+#define IS_SYMBOL(value) ((value).type == SYMBOL_TYPE)
 
 #define BOOL_NODE(value) ((ParseNode) { BOOL_TYPE, .b = value})
 #define INT_NODE(value) ((ParseNode) { INT_TYPE, .i = value})
