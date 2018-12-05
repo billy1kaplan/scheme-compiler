@@ -73,7 +73,8 @@ int main(int argc, const char* argv[]) {
   Chunk chunk;
   initChunk(&chunk);
 
-  interpret(&chunk, *car(parsed));
+  compile(*car(parsed), &chunk);
+  interpret(&chunk);
 
   /*
   if (argc == 1) {

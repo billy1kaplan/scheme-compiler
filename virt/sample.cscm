@@ -1,0 +1,5 @@
+(assign val (const 2))
+(assign argl (op list) (reg val))
+(assign val (const 1))
+(assign argl (op cons) (reg val) (reg argl))
+(assign val OP_ADD (reg argl))

@@ -79,8 +79,7 @@ static InterpretResult run() {
     case OP_ADD: VARIADIC_OP(+, INT_NODE(0)); break;
     case OP_SUBTRACT: VARIADIC_OP(-, pop()); break;
     case OP_MULTIPLY: VARIADIC_OP(*, INT_NODE(1)); break;
-    case OP_DIVIDE: BINARY_OP(/); break;
-      //case OP_NEGATE: push(-pop()); break;
+    case OP_DIVIDE: VARIADIC_OP(/, pop()); break;
     case OP_RETURN: {
       printValue(pop());
       printf("\n");
@@ -95,8 +94,7 @@ static InterpretResult run() {
 }
 
 //InterpretResult interpret(const char *source) {
-InterpretResult interpret(Chunk *chunk, ParseNode parseNode) {
-  compile(parseNode, chunk);
+InterpretResult interpret(Chunk *chunk) {
   vm.chunk = chunk;
   vm.ip = vm.chunk->code;
   disassembleChunk(chunk, "test chunk");

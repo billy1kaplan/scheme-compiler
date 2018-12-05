@@ -60,14 +60,34 @@ static void emitOperation(Chunk *chunk, ParseNode parseNode) {
   case '*':
     emitByte(chunk, OP_MULTIPLY);
     break;
+  case '/':
+    emitByte(chunk, OP_DIVIDE);
+    break;
   default:
     //Lookup symbol operation
     break;
   }
 }
 
+#define LABEL_MAX 256
+int labelCount = 0;
+int labels[LABEL_MAX];
+
+static int makeLabel(int ip) {
+  labels[labelCount] = ip;
+  return labelCount++;
+}
+
+static int getLineFromLabel(int label) {
+  return labels[label];
+}
+
 static bool streq(const ParseNode *node, const char *str) {
   return strcmp(node->s, str) == 0;
+}
+
+static bool compileLambda(Chunk *chunk, ParseNode parseNode) {
+  return false;
 }
 
 static bool compileInternal(Chunk *chunk, ParseNode parseNode) {
