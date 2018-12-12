@@ -1,5 +1,26 @@
-(assign val (const 2))
+;0 -> 2
+;1 -> 1
+
+(assign val (const 0))
 (assign argl (op list) (reg val))
 (assign val (const 1))
 (assign argl (op cons) (reg val) (reg argl))
-(assign val OP_ADD (reg argl))
+(assign val (primitive OP_ADD) (reg argl))
+
+ASSIGN_VAL
+N_2
+
+ASSIGN_ARGL
+LIST_VAL
+
+ASSIGN_VAL
+N_1
+
+ASSIGN_ARGL
+CONS
+REG_VAL
+REG_ARGL
+
+ASSIGN_VAL
+OP_ADD
+REG_ARGL
