@@ -3,28 +3,29 @@
 
 typedef enum {
   ASSIGN,
-  LOAD,
   CONS,
   LIST,
   ADD,
   MULT,
   DISPLAY,
+  END,
 } OpCode;
 
 typedef enum {
+  NO_REGISTER,
   N0,
   N1,
   N2,
-  NO_REGISTER,
-  VAL,
-  ARGL,
-} Modifier;
+  VAL_REG,
+  ARGL_REG,
+} Dest;
+
 
 typedef struct {
   OpCode op;
-  Modifier dest;
-  Modifier arg1;
-  Modifier arg2;
+  Dest dest;
+  Dest arg1;
+  Dest arg2;
 } Operation;
 
 #endif
@@ -40,7 +41,7 @@ typedef struct {
     - ASSIGN DEST   SRC
     - CONS   DEST   ARG1   ARG2
     - LIST   DEST   ARGL
-    - DISP   ----   ARGL
+    - DISP   ----   SRC
     - TEST   DEST   PRED   REG
     - GOTO   DEST   <- Line Number
     - PUSH   ----   ARG
@@ -49,6 +50,8 @@ typedef struct {
     - LOOKUP DEST   INDEX
     - DEFINE ----   INDEX   VALUE
     - SET    ----   INDEX   VALUE
+
+    - END    ----   -----   -----
 
     - PREDICATES
  **/

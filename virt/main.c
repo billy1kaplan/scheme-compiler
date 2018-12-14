@@ -10,40 +10,46 @@ int main() {
   initMemory();
 
   // Byte code:
-  static Operation arr[50] = { { LOAD, VAL, N2, NO_REGISTER },
-                               { LIST, ARGL, VAL, NO_REGISTER }};
+  // (+ 1 2)
+
   /*
 
-  static OpCode arr[50] = { FROM_VAL,
-                            N_2,
-                            FROM_ARGL,
-                            LIST_VAL,
-                            ASSIGN_ARGL,
-                            DISPLAY };
-                            N_1,
-                            ASSIGN_ARGL,
-                            CONS,
-                            REG_VAL,
-                            REG_ARGL,
-                            OP_ADD,
-                            REG_ARGL,
-                            DISPLAY }; */
+    CONS(1, 2) -> Pair(1, 2)
+    CAR(Pair(1, 2)) -> 1
+    CDR(pair(1, 2)) -> 2
 
-  // Exercise VM:
-  Value one = INT_VALUE(1);
-  Value two = INT_VALUE(2);
-  Value three = INT_VALUE(3);
+    VAL_REG : { Int, 1 }
+    ARGL_REG : { Pair (1, Pair (2, NULL)) }
 
-  displayValue(one);
-  printf("\n");
-  displayValue(two);
-  printf("\n");
-  displayValue(three);
-  printf("\n");
-  Value pair = cons(one, cons(two, cons(three, NIL_VALUE)));
-  displayValue(pair);
-  printf("\n");
+    // Exercise VM:
+    Value one = ONE;
+    Value two = INT_VALUE(2);
+    Value three = INT_VALUE(3);
 
-  interpret(11, arr);
+    displayValue(one);
+    printf("\n");
+    displayValue(two);
+    printf("\n");
+    displayValue(three);
+    printf("\n");
+    Value pair = cons(one, cons(two, cons(three, NIL_VALUE)));
+    displayValue(pair);
+    printf("\n");
+  */
+
+
+  static Operation arr[50] = { { ASSIGN, VAL_REG, N2 },
+                               { LIST, ARGL_REG, VAL_REG },
+                               { ASSIGN, VAL_REG, N1 },
+                               { CONS, ARGL_REG, VAL_REG, ARGL_REG },
+                               { ASSIGN, VAL_REG, N2 },
+                               { CONS, ARGL_REG, VAL_REG, ARGL_REG },
+                               { ASSIGN, VAL_REG, N2 },
+                               { CONS, ARGL_REG, VAL_REG, ARGL_REG },
+                               { ADD, VAL_REG, ARGL_REG },
+                               { DISPLAY, NO_REGISTER, VAL_REG },
+                               { END }};
+
+  interpret(arr);
   printf("\nDONE\n");
 }

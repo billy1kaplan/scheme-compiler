@@ -22,6 +22,6 @@ typedef struct {
 } Interpreter;
 
 void initInterpreter();
-bool interpret(int length, Operation *bytes);
+bool interpret(Operation *bytes);
 
 #endif

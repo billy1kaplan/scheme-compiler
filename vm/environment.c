@@ -11,7 +11,7 @@ void freeEnvironment(Environment *env) {
 }
 
 void defineVariable(Environment *env, EnvLocation envLocation, Value value) {
-
+  if (env->capacity < ``)
 }
 
 void setVariable(EnvLocation envLocation, Value value, Environment *env);
