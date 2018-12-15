@@ -1,5 +1,7 @@
-#include "pairMemory.h"
 #include <stdio.h>
+#include <string.h>
+
+#include "pairMemory.h"
 
 Memory memory;
 
@@ -31,6 +33,19 @@ void displayValue(Value value) {
   case INT:
     printf("%i", AS_INT(value));
     break;
+  case STR:
+    printf("%s", value.as.stringValue);
+    break;
+  case BOOL:
+    if (value.as.booleanValue) {
+      printf("#t");
+    } else {
+      printf("#f");
+    }
+    break;
+  case SYMBOL:
+    printf("Symbol: %i", value.as.symbolIndex);
+    break;
   case PAIR:
     printf("(");
     displayValue(car(value));
@@ -43,4 +58,43 @@ void displayValue(Value value) {
   default:
     break;
   }
+}
+
+bool isEqualValue(Value value1, Value value2) {
+  bool result;
+  if (value1.type != value2.type) {
+    result = false;
+  } else {
+    ValueType valueType = value1.type;
+    switch (valueType) {
+    case INT:
+      result = AS_INT(value1) == AS_INT(value2);
+      break;
+    case DOUBLE:
+      result = AS_DOUBLE(value1) == AS_DOUBLE(value2);
+      break;
+    case STR:
+      result = strcmp(AS_STRING(value1), AS_STRING(value2)) == 0;
+      break;
+    case BOOL:
+      result = AS_BOOL(value1) == AS_BOOL(value2);
+      break;
+    case SYMBOL:
+      result = GET_SYMBOL_INDEX(value1) == GET_SYMBOL_INDEX(value2);
+      break;
+    case PAIR:
+      // TODO: this probably shouldn't be recursive (use a stack)
+      result = isEqualValue(car(value1), car(value2))
+        && isEqualValue(cdr(value1), cdr(value2));
+      break;
+    case NIL:
+      result = true;
+      break;
+    default:
+      result = false;
+      break;
+    }
+  }
+
+  return result;
 }

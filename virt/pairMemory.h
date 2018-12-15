@@ -17,6 +17,7 @@ Value car(Value pair);
 Value cdr(Value pair);
 Value cons(Value first, Value second);
 
+bool isEqualValue(Value value1, Value value2);
 void displayValue(Value value);
 
 #endif

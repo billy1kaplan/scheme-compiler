@@ -15,7 +15,6 @@ typedef struct {
   Value *valReg;
   Value *arglReg;
   Value *tmpReg;
-  Value *selectedReg;
   // Registers
   // Stack
 
