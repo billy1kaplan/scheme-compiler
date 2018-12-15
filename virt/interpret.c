@@ -4,6 +4,7 @@
 #include "value.h"
 #include "constants.h"
 #include "interpret.h"
+#include "operations.h"
 #include "pairMemory.h"
 
 Interpreter interpreter;
@@ -23,36 +24,16 @@ Value *selectRegister(Dest op) {
     reg = interpreter.arglReg;
     break;
   case N0:
-    reg = &INT_VALUE(0);
+    reg = &ZERO;
     break;
   case N1:
-    reg = &INT_VALUE(1);
+    reg = &ONE;
     break;
   case N2:
-    reg = &INT_VALUE(2);
+    reg = &TWO;
     break;
   }
   return reg;
-}
-
-Value product(Value args) {
-  Value head = args;
-  Value result = ONE;
-  while (!IS_NULL(head)) {
-    result = INT_VALUE(AS_INT(result) * AS_INT(car(head)));
-    head = cdr(head);
-  }
-  return result;
-}
-
-Value sum(Value args) {
-  Value head = args;
-  Value result = ZERO;
-  while (!IS_NULL(head)) {
-    result = INT_VALUE(AS_INT(result) + AS_INT(car(head)));
-    head = cdr(head);
-  }
-  return result;
 }
 
 bool interpret(Operation *bytes) {
@@ -69,10 +50,9 @@ bool interpret(Operation *bytes) {
     Value *arg2 = selectRegister(op.arg2);
 
     switch(op.op) {
-      case ASSIGN: {
+      case ASSIGN:
         *destination = *selectRegister(op.arg1);
         break;
-      }
       case CONS:
         *destination = cons(*arg1, *arg2);
         break;
@@ -85,12 +65,11 @@ bool interpret(Operation *bytes) {
       case MULT:
         *destination = product(*arg1);
         break;
-      case DISPLAY: {
+      case DISPLAY:
         displayValue(*arg1);
         break;
       case END:
         return true;
-      }
     }
 
     interpreter.pc++;

@@ -7,7 +7,6 @@
 
 int main() {
   // Initialization Steps:
-  initMemory();
 
   // Byte code:
   // (+ 1 2)
@@ -36,7 +35,7 @@ int main() {
     displayValue(pair);
     printf("\n");
   */
-
+  initMemory();
 
   static Operation arr[50] = { { ASSIGN, VAL_REG, N2 },
                                { LIST, ARGL_REG, VAL_REG },
@@ -46,7 +45,7 @@ int main() {
                                { CONS, ARGL_REG, VAL_REG, ARGL_REG },
                                { ASSIGN, VAL_REG, N2 },
                                { CONS, ARGL_REG, VAL_REG, ARGL_REG },
-                               { ADD, VAL_REG, ARGL_REG },
+                               { MULT, VAL_REG, ARGL_REG },
                                { DISPLAY, NO_REGISTER, VAL_REG },
                                { END }};
 

@@ -25,6 +25,9 @@ Value cons(Value first, Value second) {
 
 void displayValue(Value value) {
   switch (value.type) {
+  case DOUBLE:
+    printf("%f", AS_DOUBLE(value));
+    break;
   case INT:
     printf("%i", AS_INT(value));
     break;

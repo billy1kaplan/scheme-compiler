@@ -1,8 +1,8 @@
 CC = clang
 CFLAGS = -g
 
-SRCS = value.c main.c memory.c pairMemory.c interpret.c
-HDRS = value.h opCodes.h value.h memory.h pairMemory.h interpret.h
+SRCS = value.c main.c memory.c pairMemory.c interpret.c operations.c
+HDRS = value.h opCodes.h value.h memory.h pairMemory.h interpret.h operations.h constants.h
 OBJS = $(SRCS:.c=.o)
 
 main: $(OBJS)
