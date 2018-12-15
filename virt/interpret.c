@@ -1,11 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "value.h"
 #include "constants.h"
 #include "interpret.h"
 #include "operations.h"
 #include "pairMemory.h"
+#include "value.h"
 
 Interpreter interpreter;
 

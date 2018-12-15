@@ -31,19 +31,25 @@ typedef struct {
 #endif
 
 /** Instruction Set:
-    - N0     DEST
-    - N1     DEST
-    - N2     DEST
+    - N0     DEST   ----
+    - N1     DEST   ----
+    - N2     DEST   ----
+
     - ADD    DEST   ARGL
     - SUB    DEST   ARGL
     - MULT   DEST   ARGL
     - DIV    DEST   ARGL
+    - NEGATE DEST   ARGL
+    - RECIP  DEST   ARGL
+
     - ASSIGN DEST   SRC
+    - LOAD   DEST   LOC
+
     - CONS   DEST   ARG1   ARG2
     - LIST   DEST   ARGL
     - DISP   ----   SRC
     - TEST   DEST   PRED   REG
-    - GOTO   DEST   <- Line Number
+    - GOTO   ----   Line
     - PUSH   ----   ARG
     - POP    DEST   ----
 
