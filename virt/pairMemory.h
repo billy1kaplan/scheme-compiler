@@ -20,4 +20,6 @@ Value cons(Value first, Value second);
 bool isEqualValue(Value value1, Value value2);
 void displayValue(Value value);
 
+#define LIST(value) (cons(value, NIL_VALUE))
+
 #endif

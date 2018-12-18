@@ -54,33 +54,29 @@ bool interpret(Operation *bytes) {
     Value *arg1 = selectRegister(op.arg1);
     Value *arg2 = selectRegister(op.arg2);
 
-/*
-    printf("OPERATION %i\n", op);
-    printf("START:\n");
-    printf("TMP = ");
-    displayValue(*interpreter.tmpReg);
-    printf("\nArgl = ");
-    displayValue(*interpreter.arglReg);
-    printf("\nVal = ");
-    displayValue(*interpreter.valReg);
-    printf("\n");
-    */
-
     switch(op.op) {
       case ASSIGN: {
         *destination = *arg1;
         break;
       }
       case TEST: {
-        if (!IS_FALSE(*arg1)) {
+        if (!IS_FALSE(*destination)) {
           interpreter.pc++;
         } else {
-          interpreter.pc = op.arg2;
+          interpreter.pc = op.arg1;
         }
         continue;
       }
+      case EXTND: {
+        Environment extendedEnv = extendEnvironment(*arg2, *arg1, interpreter.envReg);
+        interpreter.envReg = &extendedEnv;
+        break;
+      }
+      case LOOKUP:
+      case CLSR:
+        break;
       case GOTO:
-        interpreter.pc = op.arg1;
+        interpreter.pc = op.dest;
         continue;
       case LOAD:
         *destination = lookupSymbol(op.arg1);
@@ -101,7 +97,7 @@ bool interpret(Operation *bytes) {
         *destination = BOOL_VALUE(isEqualValue(*arg1, *arg2));
         break;
       case DISPLAY:
-        displayValue(*arg1);
+        displayValue(*destination);
         break;
       case END:
         return true;

@@ -55,6 +55,10 @@ void displayValue(Value value) {
     break;
   case NIL:
     printf("()");
+    break;
+  case CLOSURE:
+    printf("PROC-BODY");
+    break;
   default:
     break;
   }
@@ -89,6 +93,9 @@ bool isEqualValue(Value value1, Value value2) {
       break;
     case NIL:
       result = true;
+      break;
+    case CLOSURE:
+      result = false;
       break;
     default:
       result = false;

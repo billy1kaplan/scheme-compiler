@@ -13,6 +13,9 @@ typedef enum {
   DISPLAY,
   END,
   EQUAL_VALUE,
+  EXTND,
+  LOOKUP,
+  CLSR
 } OpCode;
 
 typedef enum {
@@ -36,7 +39,7 @@ typedef struct {
 #endif
 
 /** Instruction Set:
-    - N0     DEST   ----
+DONE    - N0     DEST   ----
     - N1     DEST   ----
     - N2     DEST   ----
 
@@ -56,19 +59,23 @@ typedef struct {
 
     - CONS   DEST   ARG1   ARG2
     - LIST   DEST   ARGL
-    - DISP   ----   SRC
+    - DISP   SRC
 
-    - TEST   ----   REG    LABEL
+    - TEST   REG    LABEL
 
-    - GOTO   ----   LABEL
-    - PUSH   ----   ARG
-    - POP    DEST   ----
+    - GOTO   LABEL
+    - PUSH   ARG
+    - POP    DEST
 
     - LOOKUP DEST   INDEX
     - DEFINE ----   INDEX   VALUE
     - SET    ----   INDEX   VALUE
 
     - END    ----   -----   -----
+
+    - EXTND  ORIG   VARS    VALS <- Places into env register
+    - LOOKUP DEST   VAR
+    - CLSR   DEST   BODY
 
     - PREDICATES
  **/

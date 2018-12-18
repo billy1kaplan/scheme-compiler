@@ -3,7 +3,10 @@
 
 #include <stdbool.h>
 
-typedef enum { INT, DOUBLE, STR, BOOL, SYMBOL, PAIR, NIL } ValueType;
+typedef enum { INT, DOUBLE, STR, BOOL, SYMBOL, PAIR, CLOSURE, NIL } ValueType;
+
+// Forward declaration
+struct closure;
 
 typedef struct {
   ValueType type;
@@ -14,6 +17,7 @@ typedef struct {
     bool booleanValue;
     int pairIndex;
     int symbolIndex;
+    struct closure *closure;
   } as;
 } Value;
 

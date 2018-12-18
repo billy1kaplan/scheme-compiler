@@ -3,6 +3,7 @@
 
 #include <stdbool.h>
 
+#include "environment.h"
 #include "opCodes.h"
 #include "value.h"
 
@@ -15,8 +16,11 @@ typedef struct {
   Value *valReg;
   Value *arglReg;
   Value *tmpReg;
+
+  Environment *envReg;
+
   // Registers
-  // Stack
+  // Stack <-- !!!
 
 } Interpreter;
 
