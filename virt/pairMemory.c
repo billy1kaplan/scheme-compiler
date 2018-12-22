@@ -56,8 +56,11 @@ void displayValue(Value value) {
   case NIL:
     printf("()");
     break;
-  case CLOSURE:
-    printf("PROC-BODY");
+  case PROC:
+    printf("Compiled Proc");
+    break;
+  case LAMBDA:
+    printf("LAMBDA");
     break;
   default:
     break;
@@ -94,7 +97,8 @@ bool isEqualValue(Value value1, Value value2) {
     case NIL:
       result = true;
       break;
-    case CLOSURE:
+    case PROC:
+    case LAMBDA:
       result = false;
       break;
     default:

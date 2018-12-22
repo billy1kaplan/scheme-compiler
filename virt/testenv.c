@@ -47,13 +47,6 @@ void testFailedLookupInExtended() {
   testValueEquality("Symbol does not exist in the environment", expected, actual);
 }
 
-void testMakeClosure() {
-  Value testValue = INT_VALUE(800);
-  Environment rootEnv = BASE_ENV;
-
-  Value closure = CLOSURE_VALUE(testValue, rootEnv);
-  testValueEquality("Body is the original body put in", testValue, GET_CLOSURE_BODY(closure));
-}
 
 int main() {
   testFailedLookup();

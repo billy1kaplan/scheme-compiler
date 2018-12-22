@@ -10,31 +10,47 @@
 
 Interpreter interpreter;
 
-void initInterpreter() {}
+static void resetStack() {
+  interpreter.stackTop = interpreter.stack;
+}
 
-Value *selectRegister(Dest op) {
-  Value *reg;
+void initInterpreter() {
+  resetStack();
+}
+
+void push(Register *value) {
+  *interpreter.stackTop = *value;
+  interpreter.stackTop++;
+}
+
+Register pop() {
+  Register top = *interpreter.stackTop;
+  interpreter.stackTop--;
+  return top;
+}
+
+void pushLine(int value) {
+  Register top = *interpreter.stackTop;
+  top.as.lineNumber = &value;
+  interpreter.stackTop++;
+}
+
+int popLine() {
+  Register top = *interpreter.stackTop;
+  interpreter.stackTop--;
+  return *top.as.lineNumber;
+}
+
+Register *selectRegister(Dest op) {
+  Register *reg;
   switch(op) {
-  case NO_REGISTER:
-    reg = &ZERO;
-    break;
   case VAL_REG:
-    reg = interpreter.valReg;
-    break;
   case ARGL_REG:
-    reg = interpreter.arglReg;
-    break;
   case TMP_REG:
-    reg = interpreter.tmpReg;
-    break;
-  case N0:
-    reg = &ZERO;
-    break;
-  case N1:
-    reg = &ONE;
-    break;
-  case N2:
-    reg = &TWO;
+  case CONT_REG:
+  case PROC_REG:
+  case ENV_REG:
+    reg = &interpreter.registers[op];
     break;
   default:
     break;
@@ -44,63 +60,103 @@ Value *selectRegister(Dest op) {
 
 bool interpret(Operation *bytes) {
   interpreter.pc = 0;
-  interpreter.valReg = &NIL_VALUE;
-  interpreter.arglReg = &NIL_VALUE;
-  interpreter.tmpReg = &NIL_VALUE;
 
   while (true) {
     Operation op = bytes[interpreter.pc];
-    Value *destination = selectRegister(op.dest);
-    Value *arg1 = selectRegister(op.arg1);
-    Value *arg2 = selectRegister(op.arg2);
+    Register *destination = selectRegister(op.dest);
+    Register *arg1 = selectRegister(op.arg1);
+    Register *arg2 = selectRegister(op.arg2);
 
     switch(op.op) {
-      case ASSIGN: {
-        *destination = *arg1;
-        break;
+    case ASSIGN: {
+      *destination = *arg1;
+      break;
+    }
+    case TEST: {
+      if (!IS_FALSE(*destination->as.value)) {
+        interpreter.pc++;
+      } else {
+        interpreter.pc = op.arg1;
       }
-      case TEST: {
-        if (!IS_FALSE(*destination)) {
-          interpreter.pc++;
-        } else {
-          interpreter.pc = op.arg1;
-        }
-        continue;
-      }
-      case EXTND: {
-        Environment extendedEnv = extendEnvironment(*arg2, *arg1, interpreter.envReg);
-        interpreter.envReg = &extendedEnv;
-        break;
-      }
-      case LOOKUP:
-      case CLSR:
-        break;
-      case GOTO:
-        interpreter.pc = op.dest;
-        continue;
-      case LOAD:
-        *destination = lookupSymbol(op.arg1);
-        break;
-      case CONS:
-        *destination = cons(*arg1, *arg2);
-        break;
-      case LIST:
-        *destination = cons(*arg1, NIL_VALUE);
-        break;
-      case ADD:
-        *destination = sum(*arg1);
-        break;
-      case MULT:
-        *destination = product(*arg1);
-        break;
-      case EQUAL_VALUE:
-        *destination = BOOL_VALUE(isEqualValue(*arg1, *arg2));
-        break;
-      case DISPLAY:
-        displayValue(*destination);
-        break;
-      case END:
-        return true;
+      continue;
+    }
+    case LAMBDA_OP:
+      destination->as.value = &LAMBDA_VALUE(*arg1->as.value, *arg2->as.value);
+      break;
+    case EXTND: {
+      Environment extendedEnv = extendEnvironment(*arg1->as.value, *destination->as.value, selectRegister(ENV_REG)->as.env);
+      Register envReg = *selectRegister(ENV_REG);
+      envReg.as.env = &extendedEnv;
+      break;
+    }
+    case LOOKUP: {
+      Value lookedUpValue = lookupSymbolEnv(*arg1->as.value, *selectRegister(ENV_REG)->as.env);
+
+      destination->as.value = &lookedUpValue;
+      break;
+    }
+    case MKPROC: {
+      destination->as.value = &MAKE_PROC(op.dest, *selectRegister(ENV_REG)->as.env);
+      break;
+    }
+    case GOTO: {
+      interpreter.pc = op.dest;
+      continue;
+    }
+    case LOAD: {
+      Value constant = lookupSymbol(op.arg1);
+      destination->as.value = &constant;
+      break;
+    }
+    case CONS: {
+      Value consResult = cons(*arg1->as.value, *arg2->as.value);
+      destination->as.value = &consResult;
+      break;
+    }
+    case LIST: {
+      Value listResult = cons(*arg1->as.value, NIL_VALUE);
+      destination->as.value = &listResult;
+      break;
+    }
+    case ADD: {
+      Value sumResult = sum(*arg1->as.value);
+      destination->as.value = &sumResult;
+      break;
+    }
+    case MULT: {
+      Value productResult = product(*arg1->as.value);
+      destination->as.value = &productResult;
+      break;
+    }
+    case EQUAL_VALUE: {
+      Value equalityCheck = BOOL_VALUE(isEqualValue(*arg1->as.value, *arg2->as.value));
+      destination->as.value = &equalityCheck;
+      break;
+    }
+    case DISPLAY: {
+      displayValue(*destination->as.value);
+      break;
+    }
+    case SAVE: {
+      push(destination);
+      break;
+    }
+    case RESTORE: {
+      *destination = pop();
+      break;
+    }
+    case ASSIGN_CONTINUE: {
+      Register continueReg = *selectRegister(CONT_REG);
+      continueReg.as.lineNumber = (int *)&op.dest;
+      break;
+    }
+    case COMPILED_PROCEDURE_ENV: {
+      Environment env = GET_PROC_ENV(*arg1->as.value);
+      destination->as.env = &env;
+    }
+    case JUMP:
+    case END:
+      return true;
     }
 
     interpreter.pc++;

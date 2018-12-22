@@ -1,3 +1,9 @@
 *.exe
 *.o
 *.txt
+*.dep
+*.zo
+*.*#
+*.*~
+*.cscm
+*.org

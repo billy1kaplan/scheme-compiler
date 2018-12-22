@@ -7,24 +7,30 @@
 #include "opCodes.h"
 #include "value.h"
 
+#define MAX_STACK_DEPTH 256
+#define NUM_REGISTERS 8
+
 typedef struct {
-  Value value;
+  union {
+    Value *value;
+    Environment *env;
+    int *lineNumber;
+  } as;
 } Register;
 
 typedef struct {
   int pc;
-  Value *valReg;
-  Value *arglReg;
-  Value *tmpReg;
+  Register registers[NUM_REGISTERS];
 
-  Environment *envReg;
-
-  // Registers
-  // Stack <-- !!!
+  Register stack[MAX_STACK_DEPTH];
+  Register *stackTop;
 
 } Interpreter;
 
 void initInterpreter();
 bool interpret(Operation *bytes);
+
+void push(Register *value);
+Register pop();
 
 #endif

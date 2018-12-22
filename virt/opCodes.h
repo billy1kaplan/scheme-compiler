@@ -15,17 +15,22 @@ typedef enum {
   EQUAL_VALUE,
   EXTND,
   LOOKUP,
-  CLSR
+  MKPROC,
+  LAMBDA_OP,
+  SAVE,
+  RESTORE,
+  ASSIGN_CONTINUE,
+  COMPILED_PROCEDURE_ENV,
+  JUMP,
 } OpCode;
 
 typedef enum {
-  NO_REGISTER,
-  N0,
-  N1,
-  N2,
-  TMP_REG,
-  VAL_REG,
+  VAL_REG = 0,
   ARGL_REG,
+  TMP_REG,
+  CONT_REG,
+  PROC_REG,
+  ENV_REG,
 } Dest;
 
 
@@ -40,10 +45,10 @@ typedef struct {
 
 /** Instruction Set:
 DONE    - N0     DEST   ----
-    - N1     DEST   ----
-    - N2     DEST   ----
+DONE    - N1     DEST   ----
+DONE    - N2     DEST   ----
 
-    - ADD    DEST   ARGL
+DONE    - ADD    DEST   ARGL
     - SUB    DEST   ARGL
     - MULT   DEST   ARGL
     - DIV    DEST   ARGL
@@ -64,8 +69,8 @@ DONE    - N0     DEST   ----
     - TEST   REG    LABEL
 
     - GOTO   LABEL
-    - PUSH   ARG
-    - POP    DEST
+    - SAVE    DEST
+    - RESTORE DEST
 
     - LOOKUP DEST   INDEX
     - DEFINE ----   INDEX   VALUE
@@ -73,9 +78,11 @@ DONE    - N0     DEST   ----
 
     - END    ----   -----   -----
 
-    - EXTND  ORIG   VARS    VALS <- Places into env register
+    - EXTND  VARS    VALS <- Places into env register
     - LOOKUP DEST   VAR
     - CLSR   DEST   BODY
+
+    - LAMBDA DEST   BODY    ARGS
 
     - PREDICATES
  **/

@@ -3,6 +3,15 @@
 
 #include <stdbool.h>
 
+/** Handling Symbols
+    - Preload symbols (1-pass)
+    e.g. (STORE 5.15)
+         (STORE 10)
+         (STORE #t)
+         (STORE "TEST")
+         (-- Handled at runtime: STORE my_func)
+ */
+
 typedef enum {
   OP_CONST,
   OP_ADD,

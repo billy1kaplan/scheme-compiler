@@ -3,10 +3,11 @@
 
 #include <stdbool.h>
 
-typedef enum { INT, DOUBLE, STR, BOOL, SYMBOL, PAIR, CLOSURE, NIL } ValueType;
+typedef enum { INT, DOUBLE, STR, BOOL, SYMBOL, PAIR, LAMBDA, PROC, NIL } ValueType;
 
-// Forward declaration
-struct closure;
+// Forward declarations
+struct proc;
+struct lambda;
 
 typedef struct {
   ValueType type;
@@ -17,9 +18,15 @@ typedef struct {
     bool booleanValue;
     int pairIndex;
     int symbolIndex;
-    struct closure *closure;
+    struct proc *proc;
+    struct lambda *lambda;
   } as;
 } Value;
+
+typedef struct lambda {
+  Value body;
+  Value args;
+} Lambda;
 
 #define IS_PAIR(value) ((value).type == PAIR)
 #define IS_DOUBLE(value) ((value).type == DOUBLE)
@@ -32,6 +39,7 @@ typedef struct {
 #define STRING_VALUE(value) ((Value) { STR, .as.stringValue = value})
 #define BOOL_VALUE(value) ((Value) { BOOL, .as.booleanValue = value})
 #define PAIR_VALUE(value) ((Value) { PAIR, .as.pairIndex = value})
+#define LAMBDA_VALUE(body, args) ((Value) { LAMBDA, .as.lambda = &((Lambda) { body, args }) })
 #define NIL_VALUE ((Value) { NIL })
 
 #define AS_INT(value) ((value).as.integerValue)

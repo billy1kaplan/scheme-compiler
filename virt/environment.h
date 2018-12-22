@@ -18,17 +18,17 @@ Environment baseEnvironment();
 Value lookupSymbolEnv(Value sym, Environment env);
 Environment extendEnvironment(Value values, Value variables, Environment *env);
 
-typedef struct closure {
-  Value body;
+typedef struct proc {
+  int lineNumber;
   Environment env;
-} Closure;
+} Proc;
 
-#define IS_CLOSURE(value) ((value).type == CLOSURE)
+#define IS_PROC(value) ((value).type == PROC)
 
-#define CLOSURE_VALUE(value, env) ((Value) { CLOSURE, .as.closure = &(Closure) { (value), (env) }})
+#define MAKE_PROC(value, env) ((Value) { PROC, .as.proc = &(Proc) { (value), (env) }})
 
-#define GET_CLOSURE_BODY(closure) ((closure).as.closure->body)
-#define GET_CLOSURE_ENV(closure) ((closure).as.closure->env)
+#define GET_PROC_ENV(closure) ((closure).as.proc->env)
+#define GET_PROC_LABEL(closure) ((closure).as.proc->lineNumber)
 
 #define WRAP_ENV(frame, enclosingEnvironment) ((Environment){ frame, enclosingEnvironment })
 #define BASE_ENV ((Environment){ NIL_VALUE, NULL })
