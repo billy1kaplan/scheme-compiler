@@ -594,6 +594,6 @@
 (provide statements)
 (provide set-label-start!)
 
-(statements (compile '((lambda (n) (+ n 1)) 1)
+(statements (compile '(+ 1 2 3)
                      'val
                      'next))
