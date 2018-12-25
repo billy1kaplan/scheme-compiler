@@ -41,6 +41,26 @@ int popLine() {
   return *top.as.lineNumber;
 }
 
+void loadConstants(LoadInstruction *loadInstructions) {
+  int pc = 0;
+  while (true) {
+    LoadInstruction currentInstruction = loadInstructions[pc];
+    LoadOp op = currentInstruction.op;
+    int index = currentInstruction.index;
+    Value value = currentInstruction.value;
+
+    switch(op) {
+    case INPUT:
+      inputConstant(index, value);
+      break;
+    case END_INPUT:
+      return;
+    }
+
+    pc++;
+  }
+}
+
 Register *selectRegister(Dest op) {
   Register *reg;
   switch(op) {
@@ -104,7 +124,7 @@ bool interpret(Operation *bytes) {
       continue;
     }
     case LOAD: {
-      Value constant = lookupSymbol(op.arg1);
+      Value constant = retrieveConstant(op.arg1);
       destination->as.value = &constant;
       break;
     }
@@ -155,6 +175,8 @@ bool interpret(Operation *bytes) {
       destination->as.env = &env;
     }
     case JUMP:
+      interpreter.pc = *destination->as.lineNumber;
+      break;
     case END:
       return true;
     }

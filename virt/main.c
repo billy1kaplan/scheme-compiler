@@ -17,14 +17,26 @@ int main() {
   initMemory();
   initSymbolTable();
 
-  inputSymbol(INT_VALUE(3));
-  inputSymbol(INT_VALUE(2));
-  inputSymbol(INT_VALUE(1));
+  //inputConstant(0, INT_VALUE(3));
+  //inputConstant(1, INT_VALUE(2));
+  //inputConstant(2, INT_VALUE(1));
 
+  LoadInstruction load[7] = {
+                             { INPUT, 0, INT_VALUE(1) },
+                             { INPUT, 1, DOUBLE_VALUE(1.1) },
+                             { INPUT, 2, INT_VALUE(2) },
+                             { INPUT, 3, SYMBOL_VALUE("n") },
+                             { INPUT, 4, cons(SYMBOL_VALUE("n"), NIL_VALUE) },
+                             { INPUT, 5, BOOL_VALUE(true) },
+                             { END_INPUT,  },
+  };
   /*
-    VAL_REG = 0
-    ARGL_REG = (0, NIL)
-   */
+  LoadInstruction load[50] = { { INPUT, 0, INT_VALUE(3) },
+                                      { INPUT, 1, INT_VALUE(2) },
+                                      { INPUT, 2, INT_VALUE(1) },
+                                      { INPUT, 3, SYMBOL_VALUE("some_symbol") },
+                                      { END_INPUT } };
+    */
 
   static Operation arr[50] = { { LOAD, VAL_REG, 0 },
                                { LIST, ARGL_REG, VAL_REG },
@@ -105,6 +117,7 @@ int main() {
     i++;
   }
 
+  loadConstants(load);
   interpret(arr);
   printf("\nDONE\n");
 }

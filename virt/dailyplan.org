@@ -1,7 +1,0 @@
-#+STARTUP: hidestars
-
-* 2018
-** 12-18 December
-*** Tuesday [0/2]
-   1) [ ] Work on Scheme Compiler
-   2) [ ] Advent of Code

@@ -1,3 +1,5 @@
+#include <string.h>
+
 #include "pairMemory.h"
 #include "symboltable.h"
 
@@ -7,10 +9,10 @@ void initSymbolTable() {
   symbolTable.size = 0;
 }
 
-int inputSymbol(Value symbol) {
+int inputSymbol(char *symbol) {
   int index = -1;
   for (int i = 0; i < symbolTable.size; i++) {
-    if (isEqualValue(symbol, symbolTable.symbols[i])) {
+    if (strcmp(symbol, symbolTable.symbols[i]) == 0) {
       index = i;
       break;
     }
@@ -22,8 +24,4 @@ int inputSymbol(Value symbol) {
     symbolTable.size++;
   }
   return index;
-}
-
-Value lookupSymbol(int index) {
-  return symbolTable.symbols[index];
 }

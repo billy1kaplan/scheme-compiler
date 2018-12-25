@@ -1,6 +1,8 @@
 #ifndef scheme_op_code_h
 #define scheme_op_code_h
 
+#include "value.h"
+
 typedef enum {
   ASSIGN = 0,
   TEST,
@@ -23,6 +25,17 @@ typedef enum {
   COMPILED_PROCEDURE_ENV,
   JUMP,
 } OpCode;
+
+typedef enum {
+  INPUT,
+  END_INPUT
+} LoadOp;
+
+typedef struct {
+  LoadOp op;
+  int index;
+  Value value;
+} LoadInstruction;
 
 typedef enum {
   VAL_REG = 0,

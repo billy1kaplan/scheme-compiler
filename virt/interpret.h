@@ -28,6 +28,9 @@ typedef struct {
 } Interpreter;
 
 void initInterpreter();
+
+void loadConstants(LoadInstruction *loadInstructions);
+
 bool interpret(Operation *bytes);
 
 void push(Register *value);

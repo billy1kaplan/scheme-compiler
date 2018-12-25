@@ -6,16 +6,19 @@
 #define MAX_CONSTANTS 8192
 
 typedef struct {
-  Value symbols[MAX_CONSTANTS];
+  char *symbols[MAX_CONSTANTS];
   int size;
 } SymbolTable;
 
 void initSymbolTable();
 
 // Places a symbol into the symbol table and returns the index of placement
-int inputSymbol(Value symbol);
+int inputSymbol(char *symbol);
 
-// Returns the symbol at a given lookup location
-Value lookupSymbol(int index);
+#define SYMBOL_VALUE(value) ((Value) { SYMBOL, .as.symbol = &((SymbolEntry) { inputSymbol(value), value }) })
+
+#define GET_SYMBOL_INDEX(value) ((value).as.symbol->index)
+#define GET_SYMBOL_DISPLAY(value) ((value).as.symbol->displayString)
+
 
 #endif

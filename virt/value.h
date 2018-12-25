@@ -10,6 +10,11 @@ struct proc;
 struct lambda;
 
 typedef struct {
+  int index;
+  char *displayString;
+} SymbolEntry;
+
+typedef struct {
   ValueType type;
   union {
     int integerValue;
@@ -17,7 +22,7 @@ typedef struct {
     char *stringValue;
     bool booleanValue;
     int pairIndex;
-    int symbolIndex;
+    SymbolEntry *symbol;
     struct proc *proc;
     struct lambda *lambda;
   } as;
@@ -46,8 +51,6 @@ typedef struct lambda {
 #define AS_DOUBLE(value) ((value).as.doubleValue)
 #define AS_STRING(value) ((value).as.stringValue)
 #define AS_BOOL(value) ((value).as.booleanValue)
-
-#define GET_SYMBOL_INDEX(value) ((value).as.symbolIndex)
 
 #define CAST_INT_TO_DOUBLE(value) (DOUBLE_VALUE((double)AS_INT(value)))
 

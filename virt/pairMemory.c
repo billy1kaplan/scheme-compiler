@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "symboltable.h"
 #include "pairMemory.h"
 
 Memory memory;
@@ -34,17 +35,13 @@ void displayValue(Value value) {
     printf("%i", AS_INT(value));
     break;
   case STR:
-    printf("%s", value.as.stringValue);
+    printf("\"%s\"", AS_STRING(value));
     break;
   case BOOL:
-    if (value.as.booleanValue) {
-      printf("#t");
-    } else {
-      printf("#f");
-    }
+    printf(AS_BOOL(value) ? "#t" : "#f");
     break;
   case SYMBOL:
-    printf("Symbol: %i", value.as.symbolIndex);
+    printf("%s", GET_SYMBOL_DISPLAY(value));
     break;
   case PAIR:
     printf("(");
