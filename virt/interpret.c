@@ -2,6 +2,7 @@
 #include <stdlib.h>
 
 #include "constants.h"
+#include "environment.h"
 #include "interpret.h"
 #include "operations.h"
 #include "pairMemory.h"
@@ -78,14 +79,110 @@ Register *selectRegister(Dest op) {
   return reg;
 }
 
+void debug(Operation op) {
+  char *operation;
+    switch(op.op) {
+    case ASSIGN: {
+      operation = "ASSIGN";
+      break;
+    }
+    case TEST: {
+      operation = "TEST";
+      break;
+    }
+    case LAMBDA_OP:
+      operation = "LAMBDA";
+      break;
+    case EXTND: {
+      operation = "EXTEND_ENV";
+      break;
+    }
+    case LOOKUP: {
+      operation = "LOOKUP";
+      break;
+    }
+    case MKPROC: {
+      operation = "MKPROC";
+      break;
+    }
+    case GOTO: {
+      operation = "GOTO";
+      break;
+    }
+    case LOAD: {
+      operation = "LOAD";
+      break;
+    }
+    case CONS: {
+      operation = "CONS";
+      break;
+    }
+    case LIST: {
+      operation = "LIST";
+      break;
+    }
+    case ADD: {
+      operation = "ADD";
+      break;
+    }
+    case MULT: {
+      operation = "MULT";
+      break;
+    }
+    case EQUAL_VALUE: {
+      operation = "EQ";
+      break;
+    }
+    case DISPLAY: {
+      operation = "DISPLAY";
+      break;
+    }
+    case SAVE: {
+      operation = "SAVE";
+      break;
+    }
+    case RESTORE: {
+      operation = "RESTORE";
+      break;
+    }
+    case ASSIGN_CONTINUE: {
+      operation = "ASSIGN_CONTINUE";
+      break;
+    }
+    case COMPILED_PROCEDURE_ENV: {
+      operation = "COMPILED_PROC_ENV";
+      break;
+    }
+    case COMPILED_PROC_ENTRY: {
+      operation = "COMPILED_PROC_ENTRY";
+      break;
+    }
+    case JUMP: {
+      operation = "JUMP";
+      break;
+    }
+    case END:
+      operation = "END";
+    }
+    printf("%s\n", operation);
+    fflush(stdout);
+}
+
 bool interpret(Operation *bytes) {
   interpreter.pc = 0;
+
+  interpreter.registers[ENV_REG].as.env = &BASE_ENV;
+  int o = 0;
+  interpreter.registers[CONT_REG].as.lineNumber = &o;
+
 
   while (true) {
     Operation op = bytes[interpreter.pc];
     Register *destination = selectRegister(op.dest);
     Register *arg1 = selectRegister(op.arg1);
     Register *arg2 = selectRegister(op.arg2);
+    //debug(op);
+    fflush(stdout);
 
     switch(op.op) {
     case ASSIGN: {
@@ -106,17 +203,16 @@ bool interpret(Operation *bytes) {
     case EXTND: {
       Environment extendedEnv = extendEnvironment(*arg1->as.value, *destination->as.value, selectRegister(ENV_REG)->as.env);
       Register envReg = *selectRegister(ENV_REG);
-      envReg.as.env = &extendedEnv;
+      *envReg.as.env = extendedEnv;
       break;
     }
     case LOOKUP: {
       Value lookedUpValue = lookupSymbolEnv(*arg1->as.value, *selectRegister(ENV_REG)->as.env);
-
-      destination->as.value = &lookedUpValue;
+      *destination->as.value = lookedUpValue;
       break;
     }
     case MKPROC: {
-      destination->as.value = &MAKE_PROC(op.dest, *selectRegister(ENV_REG)->as.env);
+      destination->as.value = &MAKE_PROC(op.arg1, *selectRegister(ENV_REG)->as.env);
       break;
     }
     case GOTO: {
@@ -140,7 +236,7 @@ bool interpret(Operation *bytes) {
     }
     case ADD: {
       Value sumResult = sum(*arg1->as.value);
-      destination->as.value = &sumResult;
+      *destination->as.value = sumResult;
       break;
     }
     case MULT: {
@@ -166,20 +262,26 @@ bool interpret(Operation *bytes) {
       break;
     }
     case ASSIGN_CONTINUE: {
-      Register continueReg = *selectRegister(CONT_REG);
-      continueReg.as.lineNumber = (int *)&op.dest;
+      Register *continueReg = selectRegister(CONT_REG);
+      *continueReg->as.lineNumber = (int) op.dest;
+      break;
+    }
+    case COMPILED_PROC_ENTRY: {
+      int lineNumber = GET_PROC_LABEL(*arg1->as.value);
+      destination->as.lineNumber = &lineNumber;
       break;
     }
     case COMPILED_PROCEDURE_ENV: {
       Environment env = GET_PROC_ENV(*arg1->as.value);
       destination->as.env = &env;
+      break;
     }
     case JUMP:
       interpreter.pc = *destination->as.lineNumber;
-      break;
+      continue;
     case END:
       return true;
-    }
+    };
 
     interpreter.pc++;
   }

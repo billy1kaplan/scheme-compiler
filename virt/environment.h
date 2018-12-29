@@ -13,8 +13,6 @@ typedef struct Environment {
 
 typedef struct Environment Environment;
 
-Environment baseEnvironment();
-
 Value lookupSymbolEnv(Value sym, Environment env);
 Environment extendEnvironment(Value values, Value variables, Environment *env);
 

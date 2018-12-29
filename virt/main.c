@@ -21,6 +21,7 @@ int main() {
   //inputConstant(1, INT_VALUE(2));
   //inputConstant(2, INT_VALUE(1));
 
+  /*
   LoadInstruction load[7] = {
                              { INPUT, 0, INT_VALUE(1) },
                              { INPUT, 1, DOUBLE_VALUE(1.1) },
@@ -30,13 +31,11 @@ int main() {
                              { INPUT, 5, BOOL_VALUE(true) },
                              { END_INPUT,  },
   };
-  /*
   LoadInstruction load[50] = { { INPUT, 0, INT_VALUE(3) },
                                       { INPUT, 1, INT_VALUE(2) },
                                       { INPUT, 2, INT_VALUE(1) },
                                       { INPUT, 3, SYMBOL_VALUE("some_symbol") },
                                       { END_INPUT } };
-    */
 
   static Operation arr[50] = { { LOAD, VAL_REG, 0 },
                                { LIST, ARGL_REG, VAL_REG },
@@ -47,8 +46,40 @@ int main() {
                                { ADD, VAL_REG, ARGL_REG,  },
                                { DISPLAY, VAL_REG },
                                { END } };
+  */
 
-  /*
+  LoadInstruction load[5] = {
+                             { INPUT, 0, cons(SYMBOL_VALUE("n"), NIL_VALUE) },
+                             { INPUT, 1, INT_VALUE(1) },
+                             { INPUT, 2, SYMBOL_VALUE("n") },
+                             { INPUT, 3, INT_VALUE(1) },
+                             { END_INPUT,  },
+  };
+
+  static Operation arr[22] = {
+                              { MKPROC, PROC_REG, 2,  },
+                              { GOTO, 13,  },
+                              { COMPILED_PROCEDURE_ENV, ENV_REG, PROC_REG,  },
+                              { LOAD, TMP_REG, 0,  },
+                              { EXTND, TMP_REG, ARGL_REG, },
+                              { LOAD, TMP_REG, 1,  },
+                              { ASSIGN, VAL_REG, TMP_REG,  },
+                              { LIST, ARGL_REG, VAL_REG,  },
+                              { LOAD, TMP_REG, 2,  },
+                              { LOOKUP, VAL_REG, TMP_REG, ENV_REG,  },
+                              { CONS, ARGL_REG, VAL_REG, ARGL_REG,  },
+                              { ADD, VAL_REG, ARGL_REG,  },
+                              { JUMP, CONT_REG,  },
+                              { LOAD, TMP_REG, 3,  },
+                              { ASSIGN, VAL_REG, TMP_REG,  },
+                              { LIST, ARGL_REG, VAL_REG,  },
+                              { ASSIGN_CONTINUE, 19,  },
+                              { COMPILED_PROC_ENTRY, TMP_REG, PROC_REG,  },
+                              { JUMP, TMP_REG,  },
+                              { DISPLAY, VAL_REG },
+                              { END,  },
+  };  /*
+
   static Operation arr[50] = { { LOAD, ARGL_REG, 0x1 },
                                { LOAD, VAL_REG, 0x0 },
                                { ASSIGN, TMP_REG, N1 },

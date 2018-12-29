@@ -355,7 +355,10 @@
 (define (compile-variable exp target linkage)
   (end-with-linkage linkage
                     (make-instruction-sequence '(env) (list target)
-                                               `((LOOKUP ,target (const ,exp))))))
+                                               `((assign ,target
+                                                         (op lookup-variable-value)
+                                                         (const ,exp)
+                                                         (reg env))))))
 
 (define (compile-assignment exp target linkage)
   (let ((var (assignment-variable exp))
@@ -433,8 +436,12 @@
     (append-instruction-sequences
       (make-instruction-sequence '(env proc arg1) '(env)
                                  `(,proc-entry
-                                    (SETENV (reg proc))
-                                    (EXTND (consts ,formals) (reg arg1))))
+                                    (assign env (op compiled-procedure-env) (reg proc))
+                                    (assign env
+                                            (op extend-environment)
+                                            (const ,formals)
+                                            (reg arg1)
+                                            (reg env))))
       (compile-sequence (lambda-body exp) 'val 'return))))
 
 (define builtins
@@ -523,7 +530,8 @@
   (cond ((and (eq? target 'val) (not (eq? linkage 'return)))
          (make-instruction-sequence '(proc) all-regs
                                     `((assign-continue (label ,linkage))
-                                      (jump-entry (reg proc)))))
+                                      (assign tmp (op compiled-procedure-entry) (reg proc))
+                                      (jump-entry (reg tmp)))))
         ((and (not (eq? target 'val))
               (not (eq? linkage 'return)))
          (let ((proc-return (make-label 'proc-return)))
@@ -594,6 +602,6 @@
 (provide statements)
 (provide set-label-start!)
 
-(statements (compile '(+ 1 2 3)
+(statements (compile '((lambda (n) (+ n 1)) 1)
                      'val
                      'next))
