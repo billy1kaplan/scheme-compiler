@@ -401,8 +401,7 @@
                     p-code
                     (append-instruction-sequences
                       (make-instruction-sequence '(val) '()
-                                                 `((test (op false?) (reg val))
-                                                   (branch (label ,f-branch))))
+                                                 `((test (reg val) (label ,f-branch))))
                       (parallel-instruction-sequences
                        (append-instruction-sequences t-branch c-code)
                        (append-instruction-sequences f-branch a-code))
@@ -451,6 +450,7 @@
     (* MUL)
     (list LIST)
     (cons CONS)
+    (= EQ)
     (car CAR)
     (cdr CDR)
     (make-compiled-procedure CLSR)
@@ -537,7 +537,8 @@
          (let ((proc-return (make-label 'proc-return)))
            (make-instruction-sequence '(proc) all-regs
                                       `((assign-continue (label ,proc-return))
-                                        (jump-entry (op compiled-procedure-entry) (reg proc))
+                                        (assign tmp (op compiled-procedure-entry) (reg proc))
+                                        (jump-entry (reg tmp))
                                         ,proc-return
                                         (assign ,target (reg val))
                                         (goto (label ,linkage))))))
@@ -602,6 +603,46 @@
 (provide statements)
 (provide set-label-start!)
 
-(statements (compile '((lambda (n) (+ n 1)) 1)
+(statements (compile '(
+ (
+  (lambda (f)
+    ((lambda (x) (f (lambda (y) ((x x) y))))
+     (lambda (x) (f (lambda (y) ((x x) y))))))
+  (lambda (f)
+    (lambda (n)
+      (if (= n 0)
+          1
+          (* n (f (- n 1))))))
+  )
+ 0
+ )
                      'val
                      'next))
+
+(define Y
+  (lambda (f)
+    ((lambda (x) (f (lambda (y) ((x x) y))))
+     (lambda (x) (f (lambda (y) ((x x) y)))))))
+
+(define almost-fact
+  (lambda (f)
+    (lambda (n)
+      (if (= n 0)
+          1
+          (* n (f (- n 1)))))))
+
+(define fact (Y almost-fact))
+
+(
+ (
+  (lambda (f)
+    ((lambda (x) (f (lambda (y) ((x x) y))))
+     (lambda (x) (f (lambda (y) ((x x) y))))))
+  (lambda (f)
+    (lambda (n)
+      (if (= n 0)
+          1
+          (* n (f (- n 1))))))
+  )
+ 0
+ )

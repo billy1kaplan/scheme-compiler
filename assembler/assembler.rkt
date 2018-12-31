@@ -8,22 +8,152 @@
   (goto (label after-lambda2))
   entry1
   (assign env (op compiled-procedure-env) (reg proc))
+  (assign env (op extend-environment) (const (f)) (reg arg1) (reg env))
+  (assign proc (op make-compiled-procedure) (label entry3))
+  (goto (label after-lambda4))
+  entry3
+  (assign env (op compiled-procedure-env) (reg proc))
+  (assign env (op extend-environment) (const (x)) (reg arg1) (reg env))
+  (assign proc (op lookup-variable-value) (const f) (reg env))
+  (assign val (op make-compiled-procedure) (label entry5))
+  (goto (label after-lambda6))
+  entry5
+  (assign env (op compiled-procedure-env) (reg proc))
+  (assign env (op extend-environment) (const (y)) (reg arg1) (reg env))
+  (save continue)
+  (save env)
+  (assign proc (op lookup-variable-value) (const x) (reg env))
+  (assign val (op lookup-variable-value) (const x) (reg env))
+  (assign arg1 (op list) (reg val))
+  compiled-branch8
+  (assign-continue (label proc-return10))
+  (assign tmp (op compiled-procedure-entry) (reg proc))
+  (jump-entry (reg tmp))
+  proc-return10
+  (assign proc (reg val))
+  (goto (label after-call9))
+  after-call9
+  (restore env)
+  (restore continue)
+  (assign val (op lookup-variable-value) (const y) (reg env))
+  (assign arg1 (op list) (reg val))
+  compiled-branch12
+  (assign val (op compiled-procedure-entry) (reg proc))
+  (jump-entry (reg val))
+  after-call13
+  after-lambda6
+  (assign arg1 (op list) (reg val))
+  compiled-branch15
+  (assign val (op compiled-procedure-entry) (reg proc))
+  (jump-entry (reg val))
+  after-call16
+  after-lambda4
+  (assign val (op make-compiled-procedure) (label entry17))
+  (goto (label after-lambda18))
+  entry17
+  (assign env (op compiled-procedure-env) (reg proc))
+  (assign env (op extend-environment) (const (x)) (reg arg1) (reg env))
+  (assign proc (op lookup-variable-value) (const f) (reg env))
+  (assign val (op make-compiled-procedure) (label entry19))
+  (goto (label after-lambda20))
+  entry19
+  (assign env (op compiled-procedure-env) (reg proc))
+  (assign env (op extend-environment) (const (y)) (reg arg1) (reg env))
+  (save continue)
+  (save env)
+  (assign proc (op lookup-variable-value) (const x) (reg env))
+  (assign val (op lookup-variable-value) (const x) (reg env))
+  (assign arg1 (op list) (reg val))
+  compiled-branch22
+  (assign-continue (label proc-return24))
+  (assign tmp (op compiled-procedure-entry) (reg proc))
+  (jump-entry (reg tmp))
+  proc-return24
+  (assign proc (reg val))
+  (goto (label after-call23))
+  after-call23
+  (restore env)
+  (restore continue)
+  (assign val (op lookup-variable-value) (const y) (reg env))
+  (assign arg1 (op list) (reg val))
+  compiled-branch26
+  (assign val (op compiled-procedure-entry) (reg proc))
+  (jump-entry (reg val))
+  after-call27
+  after-lambda20
+  (assign arg1 (op list) (reg val))
+  compiled-branch29
+  (assign val (op compiled-procedure-entry) (reg proc))
+  (jump-entry (reg val))
+  after-call30
+  after-lambda18
+  (assign arg1 (op list) (reg val))
+  compiled-branch32
+  (assign val (op compiled-procedure-entry) (reg proc))
+  (jump-entry (reg val))
+  after-call33
+  after-lambda2
+  (assign val (op make-compiled-procedure) (label entry34))
+  (goto (label after-lambda35))
+  entry34
+  (assign env (op compiled-procedure-env) (reg proc))
+  (assign env (op extend-environment) (const (f)) (reg arg1) (reg env))
+  (assign val (op make-compiled-procedure) (label entry36))
+  (jump-entry (reg continue))
+  entry36
+  (assign env (op compiled-procedure-env) (reg proc))
   (assign env (op extend-environment) (const (n)) (reg arg1) (reg env))
+  (assign val (const 0))
+  (assign arg1 (op list) (reg val))
+  (assign val (op lookup-variable-value) (const n) (reg env))
+  (assign arg1 (op cons) (reg val) (reg arg1))
+  (assign val (op =) (reg arg1))
+  (test (reg val) (label false-branch39))
+  true-branch38
+  (assign val (const 1))
+  (jump-entry (reg continue))
+  false-branch39
+  (save continue)
+  (save env)
+  (assign proc (op lookup-variable-value) (const f) (reg env))
   (assign val (const 1))
   (assign arg1 (op list) (reg val))
   (assign val (op lookup-variable-value) (const n) (reg env))
   (assign arg1 (op cons) (reg val) (reg arg1))
-  (assign val (op +) (reg arg1))
-  (jump-entry (reg continue))
-  after-lambda2
-  (assign val (const 1))
+  (assign val (op -) (reg arg1))
   (assign arg1 (op list) (reg val))
-  compiled-branch4
-  (assign-continue (label after-call5))
+  compiled-branch42
+  (assign-continue (label after-call43))
   (assign tmp (op compiled-procedure-entry) (reg proc))
   (jump-entry (reg tmp))
-  after-call5
-  ))
+  after-call43
+  (assign arg1 (op list) (reg val))
+  (restore env)
+  (assign val (op lookup-variable-value) (const n) (reg env))
+  (assign arg1 (op cons) (reg val) (reg arg1))
+  (restore continue)
+  (assign val (op *) (reg arg1))
+  (jump-entry (reg continue))
+  after-if40
+  after-lambda37
+  after-lambda35
+  (assign arg1 (op list) (reg val))
+  compiled-branch45
+  (assign-continue (label proc-return47))
+  (assign tmp (op compiled-procedure-entry) (reg proc))
+  (jump-entry (reg tmp))
+  proc-return47
+  (assign proc (reg val))
+  (goto (label after-call46))
+  after-call46
+  (assign val (const 1))
+  (assign arg1 (op list) (reg val))
+  compiled-branch49
+  (assign-continue (label after-call50))
+  (assign tmp (op compiled-procedure-entry) (reg proc))
+  (jump-entry (reg tmp))
+  after-call50)
+  )
   
 (define (remove-labels source)
   ;; Returns an association list of labels to line numbers
@@ -56,6 +186,15 @@
 (define (tagged-union value tag)
   (and (pair? value) (eq? tag (car value))))
 
+(define (test? exp)
+  (tagged-union exp 'test))
+
+(define (save? exp)
+  (tagged-union exp 'save))
+
+(define (restore? exp)
+  (tagged-union exp 'restore))
+
 (define (assign? exp)
   (tagged-union exp 'assign))
 
@@ -83,7 +222,8 @@
   '((+ ADD)
     (- MINUS)
     (/ DIV)
-    (* MUL)
+    (* MULT)
+    (= EQ)
     (list LIST)
     (cons CONS)
     (car CAR)
@@ -121,15 +261,18 @@
         (op-body (car (cdaddr exp)))
         (body (cdddr exp)))
     (define (translate-op)
-      (let ((primitive (cadr (assoc op-body builtins))))
-        (if (memq primitive implicit-env)
-            (list (filter (lambda (x) (not (eq? 'ENV x)))
-                          `(,primitive ,(fix-register (list 'reg reg)) ,@(map fix-register body))))
-            `((,primitive ,(fix-register (list 'reg reg)) ,@(map fix-register body))))))
-    (define (translate-const) `((LOAD ,(fix-register (list 'reg reg)) ,op-body)))
-    (if (eq? op 'const)
-        (translate-const)
-        (translate-op))))
+      (let ((primitive (assoc op-body builtins)))
+        (if (not primitive)
+            (error "Could not find primitive operation -- " exp)
+            (if (memq (cadr primitive) implicit-env)
+                (list (filter (lambda (x) (not (eq? 'ENV_REG x)))
+                              `(,(cadr primitive) ,(fix-register (list 'reg reg)) ,@(map fix-register body))))
+                `((,(cadr primitive) ,(fix-register (list 'reg reg)) ,@(map fix-register body)))))))
+    (define (translate-const) `((ASSIGN ,(fix-register (list 'reg reg)) ,(caddr exp))))
+    (define (translate-simple) `((ASSIGN  ,(fix-register (list 'reg reg)) ,@(map fix-register (cddr exp)))))
+    (cond ((eq? op 'const) (translate-const))
+          ((eq? op 'reg) (translate-simple))
+          (else (translate-op)))))
 
 (define (translate-goto instruction)
   `((GOTO ,(cadr instruction))))
@@ -140,6 +283,15 @@
 (define (translate-jump instruction)
   `((JUMP ,(fix-register (cadr instruction)))))
 
+(define (translate-save instruction)
+  `((SAVE ,(fix-register (list 'reg (cadr instruction))))))
+
+(define (translate-restore instruction)
+  `((RESTORE ,(fix-register (list 'reg (cadr instruction))))))
+
+(define (translate-test instruction)
+  `((TEST ,(fix-register (cadr instruction)) ,@(cddr instruction))))
+
 (define assign-exp '((assign val (op list) (reg argl))))
 ;(define assign-exp '(assign proc (const 1)))
 
@@ -149,6 +301,9 @@
         ((goto? instruction) (translate-goto instruction))
         ((jump? instruction) (translate-jump instruction))
         ((continue? instruction) (translate-continue instruction))
+        ((save? instruction) (translate-save instruction))
+        ((restore? instruction) (translate-restore instruction))
+        ((test? instruction) (translate-test instruction))
         (else (list instruction))))
 
 (define (to-string el)
@@ -189,9 +344,9 @@
                     (+ index 1)
                     (cons (map (lambda (part)
                                  (if (equal? part (car const-term))
-                                     'TMP
+                                     'TMP_REG
                                      part)) (car instructions))
-                          (cons `(LOAD TMP ,index)
+                          (cons `(LOAD TMP_REG ,index)
                                 acc))
                     (cdr instructions))
               (iter constants index (cons (car instructions) acc) (cdr instructions))))))
@@ -234,15 +389,6 @@
                  " },"))
 
 
-(define sample-load
-  `(,(load-op 0 1)
-    ,(load-op 1 1.1)
-    ,(load-op 2 "HELLO WORLD!")
-    ,(load-op 3 'n)
-    ,(load-op 4 '(n))
-    ,(load-op 5 #t)
-    (END_INPUT)))
-
 (let ((instructions (to-machine sample-input)))
   ;(define out (open-output-file "/home/billy/Projects/scheme-compiler/assembler/load.vm"))
   (define out (current-output-port))
@@ -255,7 +401,7 @@
   (display "};" out)
   (newline out)
   (newline out)
-  (display (string-append "static Operation ops[" (number->string (length (cdr instructions))) "] = {") out)
+  (display (string-append "static Operation arr[" (number->string (length (cdr instructions))) "] = {") out)
   (newline out)
   (for-each (lambda (line)
               (display (print-inst line) out)

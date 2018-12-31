@@ -19,7 +19,6 @@ typedef enum {
   EXTND,
   LOOKUP,
   MKPROC,
-  LAMBDA_OP,
   SAVE,
   RESTORE,
   ASSIGN_CONTINUE,

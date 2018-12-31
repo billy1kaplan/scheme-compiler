@@ -16,9 +16,9 @@ static Value assoc(Value sym, Value values) {
 }
 
 
-Value lookupSymbolEnv(Value sym, Environment env) {
-  Value head = env.frames;
-  Value result = assoc(sym, env.frames);
+Value lookupSymbolEnv(Value sym, Value env) {
+  Value head = env;
+  Value result = assoc(sym, env);
 
   while (!IS_NULL(head)) {
     result = assoc(sym, car(head));
@@ -36,7 +36,7 @@ Value lookupSymbolEnv(Value sym, Environment env) {
     }
 }
 
-Environment extendEnvironment(Value values, Value variables, Environment env) {
+Value extendEnvironment(Value values, Value variables, Value env) {
   Value frame = NIL_VALUE;
 
   Value curValues = values;
@@ -47,9 +47,9 @@ Environment extendEnvironment(Value values, Value variables, Environment env) {
     curVariables = cdr(curVariables);
   }
 
-  return WRAP_ENV(cons(frame, env.frames));
+  return cons(frame, env);
 }
 
-void displayEnvironment(Environment env) {
-  displayValue(env.frames);
+void displayEnvironment(Value env) {
+  displayValue(env);
 }
