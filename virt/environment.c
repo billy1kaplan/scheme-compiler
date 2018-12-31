@@ -2,10 +2,6 @@
 
 #include "environment.h"
 
-static bool hasEnclosingEnvironment(Environment env) {
-  return env.enclosingEnvironment != NULL;
-}
-
 static Value assoc(Value sym, Value values) {
   Value head = values;
 
@@ -21,12 +17,16 @@ static Value assoc(Value sym, Value values) {
 
 
 Value lookupSymbolEnv(Value sym, Environment env) {
-  Environment curEnv = env;
-  Value result = assoc(sym, curEnv.values);
+  Value head = env.frames;
+  Value result = assoc(sym, env.frames);
 
-  while (IS_NULL(result) && hasEnclosingEnvironment(curEnv)) {
-    curEnv = *curEnv.enclosingEnvironment;
-    result = assoc(sym, curEnv.values);
+  while (!IS_NULL(head)) {
+    result = assoc(sym, car(head));
+
+    if (!IS_NULL(result))
+      break;
+
+    head = cdr(head);
   }
 
     if (IS_PAIR(result)) {
@@ -36,7 +36,7 @@ Value lookupSymbolEnv(Value sym, Environment env) {
     }
 }
 
-Environment extendEnvironment(Value values, Value variables, Environment *env) {
+Environment extendEnvironment(Value values, Value variables, Environment env) {
   Value frame = NIL_VALUE;
 
   Value curValues = values;
@@ -47,5 +47,9 @@ Environment extendEnvironment(Value values, Value variables, Environment *env) {
     curVariables = cdr(curVariables);
   }
 
-  return WRAP_ENV(frame, env);
+  return WRAP_ENV(cons(frame, env.frames));
+}
+
+void displayEnvironment(Environment env) {
+  displayValue(env.frames);
 }

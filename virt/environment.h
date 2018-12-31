@@ -6,15 +6,13 @@
 
 #include "pairMemory.h"
 
-typedef struct Environment {
-  Value values;
-  struct Environment *enclosingEnvironment;
-} tEnvironment;
-
-typedef struct Environment Environment;
+typedef struct {
+  Value frames;
+} Environment ;
 
 Value lookupSymbolEnv(Value sym, Environment env);
-Environment extendEnvironment(Value values, Value variables, Environment *env);
+Environment extendEnvironment(Value values, Value variables, Environment env);
+void displayEnvironment(Environment env);
 
 typedef struct proc {
   int lineNumber;
@@ -28,8 +26,7 @@ typedef struct proc {
 #define GET_PROC_ENV(closure) ((closure).as.proc->env)
 #define GET_PROC_LABEL(closure) ((closure).as.proc->lineNumber)
 
-#define WRAP_ENV(frame, enclosingEnvironment) ((Environment){ frame, enclosingEnvironment })
-#define BASE_ENV ((Environment){ NIL_VALUE, NULL })
-
+#define BASE_ENV ((Environment){ NIL_VALUE })
+#define WRAP_ENV(vals) ((Environment){ (vals) })
 
 #endif

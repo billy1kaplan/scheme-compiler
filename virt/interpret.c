@@ -13,33 +13,23 @@ Interpreter interpreter;
 
 static void resetStack() {
   interpreter.stackTop = interpreter.stack;
+  interpreter.depth = 0;
 }
 
 void initInterpreter() {
   resetStack();
 }
 
-void push(Register *value) {
-  *interpreter.stackTop = *value;
+void push(Register regValue) {
+  *interpreter.stackTop = regValue;
   interpreter.stackTop++;
 }
 
 Register pop() {
   Register top = *interpreter.stackTop;
   interpreter.stackTop--;
+  interpreter.depth--;
   return top;
-}
-
-void pushLine(int value) {
-  Register top = *interpreter.stackTop;
-  top.as.lineNumber = &value;
-  interpreter.stackTop++;
-}
-
-int popLine() {
-  Register top = *interpreter.stackTop;
-  interpreter.stackTop--;
-  return *top.as.lineNumber;
 }
 
 void loadConstants(LoadInstruction *loadInstructions) {
@@ -60,23 +50,6 @@ void loadConstants(LoadInstruction *loadInstructions) {
 
     pc++;
   }
-}
-
-Register *selectRegister(Dest op) {
-  Register *reg;
-  switch(op) {
-  case VAL_REG:
-  case ARGL_REG:
-  case TMP_REG:
-  case CONT_REG:
-  case PROC_REG:
-  case ENV_REG:
-    reg = &interpreter.registers[op];
-    break;
-  default:
-    break;
-  }
-  return reg;
 }
 
 void debug(Operation op) {
@@ -125,6 +98,14 @@ void debug(Operation op) {
       operation = "ADD";
       break;
     }
+    case EQ: {
+      operation = "EQ";
+      break;
+    }
+    case MINUS: {
+      operation = "MINUS";
+      break;
+    }
     case MULT: {
       operation = "MULT";
       break;
@@ -164,55 +145,100 @@ void debug(Operation op) {
     case END:
       operation = "END";
     }
-    printf("%s\n", operation);
-    fflush(stdout);
 }
 
 bool interpret(Operation *bytes) {
   interpreter.pc = 0;
 
   interpreter.registers[ENV_REG].as.env = &BASE_ENV;
-  int o = 0;
-  interpreter.registers[CONT_REG].as.lineNumber = &o;
 
+  interpreter.registers[CONTINUE_REG].as.value = &NIL_VALUE;
+  interpreter.registers[PROC_REG].as.value = &NIL_VALUE;
+  interpreter.registers[VAL_REG].as.value = &INT_VALUE(6);
+  interpreter.registers[TMP_REG].as.value = &INT_VALUE(2);
+  interpreter.registers[ARGL_REG].as.value = &NIL_VALUE;
 
   while (true) {
     Operation op = bytes[interpreter.pc];
-    Register *destination = selectRegister(op.dest);
-    Register *arg1 = selectRegister(op.arg1);
-    Register *arg2 = selectRegister(op.arg2);
-    //debug(op);
+    debug(op);
     fflush(stdout);
 
     switch(op.op) {
     case ASSIGN: {
-      *destination = *arg1;
+      Value val = *REGISTER_VAL(op.arg1);
+      UPDATE_REGISTER_VAL(op.dest, val);
       break;
     }
     case TEST: {
-      if (!IS_FALSE(*destination->as.value)) {
+      if (!IS_FALSE(*REGISTER_VAL(op.dest))) {
         interpreter.pc++;
       } else {
         interpreter.pc = op.arg1;
       }
       continue;
     }
-    case LAMBDA_OP:
-      destination->as.value = &LAMBDA_VALUE(*arg1->as.value, *arg2->as.value);
+    case LAMBDA_OP: {
+      Value lambda = LAMBDA_VALUE(
+        *REGISTER_VAL(op.arg1),
+        *REGISTER_VAL(op.arg2));
+
+      UPDATE_REGISTER_VAL(op.dest, lambda);
       break;
+    }
     case EXTND: {
-      Environment extendedEnv = extendEnvironment(*arg1->as.value, *destination->as.value, selectRegister(ENV_REG)->as.env);
-      Register envReg = *selectRegister(ENV_REG);
-      *envReg.as.env = extendedEnv;
+      displayEnvironment(*REGISTER_ENV(ENV_REG));
+      Environment extendedEnv = extendEnvironment(
+        *REGISTER_VAL(op.arg1),
+        *REGISTER_VAL(op.dest),
+        *REGISTER_ENV(ENV_REG));
+
+      printf("wtf? ");
+      displayEnvironment(extendedEnv);
+      printf("\n");
+      fflush(stdout);
+
+
+      UPDATE_REGISTER_ENV(ENV_REG, extendedEnv);
+      printf("after extnd : ");
+      displayEnvironment(*REGISTER_ENV(ENV_REG));
+
+      printf("\n");
       break;
     }
     case LOOKUP: {
-      Value lookedUpValue = lookupSymbolEnv(*arg1->as.value, *selectRegister(ENV_REG)->as.env);
-      *destination->as.value = lookedUpValue;
+      printf("Here?");
+      printf("\n");
+      fflush(stdout);
+      printf("\nLooking up: ");
+      fflush(stdout);
+      displayValue(*REGISTER_VAL(op.arg1));
+      printf("\n");
+      fflush(stdout);
+      printf("PROC REG : ");
+      displayValue(*REGISTER_VAL(PROC_REG));
+      printf("\n");
+      Value lookedUpValue = lookupSymbolEnv(*REGISTER_VAL(op.arg1),
+        *REGISTER_ENV(ENV_REG));
+      UPDATE_REGISTER_VAL(op.dest, lookedUpValue);
+      printf("\nRES IS: ");
+      fflush(stdout);
+      displayValue(*REGISTER_VAL(op.dest));
+      printf("\n");
+      fflush(stdout);
+      printf("PROC REG : ");
+      displayValue(*REGISTER_VAL(PROC_REG));
+      printf("\n");
       break;
     }
     case MKPROC: {
-      destination->as.value = &MAKE_PROC(op.arg1, *selectRegister(ENV_REG)->as.env);
+      Value proc = MAKE_PROC(op.arg1, *REGISTER_ENV(ENV_REG));
+      printf("%i", op.dest);
+      //*destination->as.value = proc;
+      UPDATE_REGISTER_VAL(op.dest, proc);
+      displayValue(*interpreter.registers[PROC_REG].as.value);
+      printf("d\n");
+      printf("%i\n", GET_PROC_LABEL(*interpreter.registers[PROC_REG].as.value));
+      printf("%p, %p\n", REGISTER_VAL(PROC_REG), REGISTER_LINE(VAL_REG));
       break;
     }
     case GOTO: {
@@ -221,63 +247,92 @@ bool interpret(Operation *bytes) {
     }
     case LOAD: {
       Value constant = retrieveConstant(op.arg1);
-      destination->as.value = &constant;
+      printf("LOAD %i\n", op.arg1);
+      fflush(stdout);
+      UPDATE_REGISTER_VAL(op.dest, constant);
+      //*destination->as.value = constant;
       break;
     }
     case CONS: {
-      Value consResult = cons(*arg1->as.value, *arg2->as.value);
-      destination->as.value = &consResult;
+      Value consResult = cons(*REGISTER_VAL(op.arg1), *REGISTER_VAL(op.arg2));
+      UPDATE_REGISTER_VAL(op.dest, consResult);
       break;
     }
     case LIST: {
-      Value listResult = cons(*arg1->as.value, NIL_VALUE);
-      destination->as.value = &listResult;
+      Value listResult = cons(*REGISTER_VAL(op.arg1), NIL_VALUE);
+      UPDATE_REGISTER_VAL(op.dest, listResult);
+      break;
+    }
+    case EQ: {
+      Value eqResult = nEqual(*REGISTER_VAL(op.arg1));
+      UPDATE_REGISTER_VAL(op.dest, eqResult);
       break;
     }
     case ADD: {
-      Value sumResult = sum(*arg1->as.value);
-      *destination->as.value = sumResult;
+      Value sumResult = sum(*REGISTER_VAL(op.arg1));
+      UPDATE_REGISTER_VAL(op.dest, sumResult);
+      break;
+    }
+    case MINUS: {
+      Value minusResult = minus(*REGISTER_VAL(op.arg1));
+      UPDATE_REGISTER_VAL(op.dest, minusResult);
       break;
     }
     case MULT: {
-      Value productResult = product(*arg1->as.value);
-      destination->as.value = &productResult;
+      Value productResult = product(*REGISTER_VAL(op.arg1));
+      UPDATE_REGISTER_VAL(op.dest, productResult);
       break;
     }
     case EQUAL_VALUE: {
-      Value equalityCheck = BOOL_VALUE(isEqualValue(*arg1->as.value, *arg2->as.value));
-      destination->as.value = &equalityCheck;
+      Value equalityCheck = BOOL_VALUE(isEqualValue(
+        *REGISTER_VAL(op.arg1),
+        *REGISTER_VAL(op.arg2)));
+      UPDATE_REGISTER_VAL(op.dest, equalityCheck);
       break;
     }
     case DISPLAY: {
-      displayValue(*destination->as.value);
+      printf("DISPLAYING = ");
+      displayValue(*REGISTER_VAL(op.dest));
+      printf("\n");
       break;
     }
     case SAVE: {
-      push(destination);
+      push(interpreter.registers[op.dest]);
       break;
     }
     case RESTORE: {
-      *destination = pop();
+      Register top = pop();
+      *interpreter.registers[op.dest].as.env  = *top.as.env;
       break;
     }
     case ASSIGN_CONTINUE: {
-      Register *continueReg = selectRegister(CONT_REG);
-      *continueReg->as.lineNumber = (int) op.dest;
+      int ln = op.dest;
+      UPDATE_REGISTER_LINE(CONTINUE_REG, ln);
+      printf("assigned to %i\n", *REGISTER_LINE(CONTINUE_REG));
       break;
     }
     case COMPILED_PROC_ENTRY: {
-      int lineNumber = GET_PROC_LABEL(*arg1->as.value);
-      destination->as.lineNumber = &lineNumber;
+      fflush(stdout);
+      printf("%p, %p\n", REGISTER_VAL(op.arg1), REGISTER_VAL(op.dest));
+      displayValue(*REGISTER_VAL(op.arg1));
+      printf("\n");
+      fflush(stdout);
+      int lineNumber = GET_PROC_LABEL(*REGISTER_VAL(op.arg1));
+      printf("before to %i\n", lineNumber);
+      fflush(stdout);
+      UPDATE_REGISTER_LINE(op.dest, lineNumber);
+      printf("%p, %p\n", REGISTER_VAL(op.arg1), REGISTER_LINE(op.dest));
+      printf("%p, %p\n", REGISTER_VAL(PROC_REG), REGISTER_LINE(VAL_REG));
       break;
     }
     case COMPILED_PROCEDURE_ENV: {
-      Environment env = GET_PROC_ENV(*arg1->as.value);
-      destination->as.env = &env;
+      Environment env = GET_PROC_ENV(*REGISTER_VAL(op.arg1));
+      UPDATE_REGISTER_ENV(op.dest, env);
       break;
     }
     case JUMP:
-      interpreter.pc = *destination->as.lineNumber;
+      interpreter.pc = *REGISTER_LINE(op.dest);
+      printf(" TO %i\n", interpreter.pc);
       continue;
     case END:
       return true;

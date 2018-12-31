@@ -44,7 +44,7 @@ typedef struct lambda {
 #define STRING_VALUE(value) ((Value) { STR, .as.stringValue = value})
 #define BOOL_VALUE(value) ((Value) { BOOL, .as.booleanValue = value})
 #define PAIR_VALUE(value) ((Value) { PAIR, .as.pairIndex = value})
-#define LAMBDA_VALUE(body, args) ((Value) { LAMBDA, .as.lambda = &((Lambda) { body, args }) })
+#define LAMBDA_VALUE(body, args) ((Value) { LAMBDA, .as.lambda = &((Lambda) { (body), (args) }) })
 #define NIL_VALUE ((Value) { NIL })
 
 #define AS_INT(value) ((value).as.integerValue)

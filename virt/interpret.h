@@ -24,6 +24,7 @@ typedef struct {
 
   Register stack[MAX_STACK_DEPTH];
   Register *stackTop;
+  int depth;
 
 } Interpreter;
 
@@ -33,7 +34,15 @@ void loadConstants(LoadInstruction *loadInstructions);
 
 bool interpret(Operation *bytes);
 
-void push(Register *value);
+void push(Register value);
 Register pop();
+
+#define UPDATE_REGISTER_ENV(reg, update) (*interpreter.registers[reg].as.env = (update))
+#define UPDATE_REGISTER_LINE(reg, update) (*interpreter.registers[reg].as.lineNumber = (update))
+#define UPDATE_REGISTER_VAL(reg, update) (*interpreter.registers[reg].as.value = (update))
+
+#define REGISTER_ENV(reg) (interpreter.registers[reg].as.env)
+#define REGISTER_LINE(reg) (interpreter.registers[reg].as.lineNumber)
+#define REGISTER_VAL(reg) (interpreter.registers[reg].as.value)
 
 #endif

@@ -11,6 +11,7 @@ typedef enum {
   CONS,
   LIST,
   ADD,
+  MINUS,
   MULT,
   DISPLAY,
   END,
@@ -25,6 +26,7 @@ typedef enum {
   COMPILED_PROC_ENTRY,
   COMPILED_PROCEDURE_ENV,
   JUMP,
+  EQ,
 } OpCode;
 
 typedef enum {
@@ -42,7 +44,7 @@ typedef enum {
   VAL_REG = 0,
   ARGL_REG,
   TMP_REG,
-  CONT_REG,
+  CONTINUE_REG,
   PROC_REG,
   ENV_REG,
 } Dest;
